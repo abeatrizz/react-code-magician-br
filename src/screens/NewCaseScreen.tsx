@@ -1,25 +1,24 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const NewCaseScreen = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    patient: '',
     description: '',
-    location: '',
-    priority: '',
-    type: ''
+    requestDate: '',
+    priority: 'Normal'
   });
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +26,7 @@ const NewCaseScreen = () => {
 
     try {
       // Simular criação do caso
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       toast({
         title: "Caso criado com sucesso!",
@@ -58,9 +57,10 @@ const NewCaseScreen = () => {
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-xl font-bold text-gray-800">Novo Caso Pericial</h1>
+        <h1 className="text-xl font-bold text-gray-800">Novo Caso</h1>
       </div>
 
+      {/* Form */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="text-gray-800">Informações do Caso</CardTitle>
@@ -68,67 +68,48 @@ const NewCaseScreen = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="title" className="text-gray-700">Título do Caso</Label>
+              <Label htmlFor="title">Título do Caso</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                placeholder="Ex: Identificação de vítima - João da Silva"
+                placeholder="Ex: Análise Dental - Paciente X"
                 className="bg-white"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="type" className="text-gray-700">Tipo de Caso</Label>
-              <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="identificacao">Identificação de Vítima</SelectItem>
-                  <SelectItem value="comparacao">Comparação Odontológica</SelectItem>
-                  <SelectItem value="trauma">Análise de Trauma</SelectItem>
-                  <SelectItem value="idade">Estimativa de Idade</SelectItem>
-                  <SelectItem value="outros">Outros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="location" className="text-gray-700">Local</Label>
+              <Label htmlFor="patient">Paciente/Identificação</Label>
               <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                placeholder="Ex: Hospital Municipal - São Paulo, SP"
+                id="patient"
+                value={formData.patient}
+                onChange={(e) => setFormData({...formData, patient: e.target.value})}
+                placeholder="Nome do paciente ou identificação"
                 className="bg-white"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="priority" className="text-gray-700">Prioridade</Label>
-              <Select value={formData.priority} onValueChange={(value) => setFormData({...formData, priority: value})}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Selecione a prioridade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="baixa">Baixa</SelectItem>
-                  <SelectItem value="media">Média</SelectItem>
-                  <SelectItem value="alta">Alta</SelectItem>
-                  <SelectItem value="urgente">Urgente</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="requestDate">Data de Solicitação</Label>
+              <Input
+                id="requestDate"
+                type="date"
+                value={formData.requestDate}
+                onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
+                className="bg-white"
+                required
+              />
             </div>
 
             <div>
-              <Label htmlFor="description" className="text-gray-700">Descrição Detalhada</Label>
+              <Label htmlFor="description">Descrição</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Descreva os detalhes do caso, circunstâncias e informações relevantes..."
+                placeholder="Descreva os detalhes do caso, objetivo da perícia, informações relevantes..."
                 className="bg-white min-h-[100px]"
                 required
               />
