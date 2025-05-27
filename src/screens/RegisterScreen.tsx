@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Logo from '@/components/Logo';
 
 const RegisterScreen = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,8 @@ const RegisterScreen = () => {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#f5f5f0' }}>
       <Card className="w-full max-w-md" style={{ backgroundColor: '#D4C9BE' }}>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold" style={{ color: '#123458' }}>
+          <Logo size="large" variant="dark" className="mb-2" />
+          <CardTitle className="text-xl font-bold" style={{ color: '#123458' }}>
             Cadastro
           </CardTitle>
         </CardHeader>

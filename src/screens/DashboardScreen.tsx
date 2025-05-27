@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, FileText, Camera, BarChart3, Search, Filter } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import Logo from '@/components/Logo';
 
 const DashboardScreen = () => {
   const { user } = useAuth();
@@ -62,6 +63,15 @@ const DashboardScreen = () => {
 
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header com Logo */}
+      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+        <Logo size="medium" variant="dark" />
+        <div className="text-right">
+          <p className="text-sm text-gray-600">Bem-vindo</p>
+          <p className="font-semibold text-gray-800">{user?.name}</p>
+        </div>
+      </div>
+
       {/* Header com busca */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative flex-1">

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { FileText, Download, Eye } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 const ReportsScreen = () => {
   const { user } = useAuth();
@@ -34,6 +35,11 @@ const ReportsScreen = () => {
 
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header com Logo */}
+      <div className="flex items-center justify-center mb-6 p-4 bg-white rounded-lg shadow-sm">
+        <Logo size="medium" variant="dark" />
+      </div>
+
       {/* Header */}
       <div className="text-center py-4">
         <h1 className="text-2xl font-bold text-gray-800">Relatórios</h1>
