@@ -1,21 +1,36 @@
 
-import { Preferences } from '@capacitor/preferences';
-
+// Web-compatible storage utility
 export const Storage = {
   async setItem(key: string, value: string): Promise<void> {
-    await Preferences.set({ key, value });
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
   },
 
   async getItem(key: string): Promise<string | null> {
-    const { value } = await Preferences.get({ key });
-    return value;
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error('Storage error:', error);
+      return null;
+    }
   },
 
   async removeItem(key: string): Promise<void> {
-    await Preferences.remove({ key });
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
   },
 
   async clear(): Promise<void> {
-    await Preferences.clear();
+    try {
+      localStorage.clear();
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
   }
 };

@@ -1,7 +1,35 @@
 
 import React, { createContext, useState, useEffect } from 'react';
-import { Preferences } from '@capacitor/preferences';
 import { toast } from '@/hooks/use-toast';
+
+// Web-compatible storage fallback
+const webStorage = {
+  async get(options: { key: string }) {
+    try {
+      const value = localStorage.getItem(options.key);
+      return { value };
+    } catch {
+      return { value: null };
+    }
+  },
+  async set(options: { key: string; value: string }) {
+    try {
+      localStorage.setItem(options.key, options.value);
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
+  },
+  async remove(options: { key: string }) {
+    try {
+      localStorage.removeItem(options.key);
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
+  }
+};
+
+// Use web storage for now, can be replaced with Capacitor when needed
+const storage = webStorage;
 
 interface User {
   id: string;
@@ -31,8 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuthStatus = async () => {
     try {
-      const { value: token } = await Preferences.get({ key: 'auth_token' });
-      const { value: userData } = await Preferences.get({ key: 'user_data' });
+      const { value: token } = await storage.get({ key: 'auth_token' });
+      const { value: userData } = await storage.get({ key: 'user_data' });
       
       if (token && userData) {
         setUser(JSON.parse(userData));
@@ -60,8 +88,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         const mockToken = 'mock_jwt_token_12345';
         
-        await Preferences.set({ key: 'auth_token', value: mockToken });
-        await Preferences.set({ key: 'user_data', value: JSON.stringify(mockUser) });
+        await storage.set({ key: 'auth_token', value: mockToken });
+        await storage.set({ key: 'user_data', value: JSON.stringify(mockUser) });
         
         setUser(mockUser);
         toast({
@@ -93,8 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await Preferences.remove({ key: 'auth_token' });
-      await Preferences.remove({ key: 'user_data' });
+      await storage.remove({ key: 'auth_token' });
+      await storage.remove({ key: 'user_data' });
       setUser(null);
       toast({
         title: "Logout realizado",

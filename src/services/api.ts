@@ -1,8 +1,19 @@
 
 import axios from 'axios';
-import { Preferences } from '@capacitor/preferences';
 
 const API_BASE_URL = 'https://api.odontolegal.com'; // Substituir pela URL real
+
+// Web-compatible storage fallback
+const webStorage = {
+  async get(options: { key: string }) {
+    try {
+      const value = localStorage.getItem(options.key);
+      return { value };
+    } catch {
+      return { value: null };
+    }
+  }
+};
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +24,7 @@ const api = axios.create({
 
 // Interceptor para adicionar token de autorização
 api.interceptors.request.use(async (config) => {
-  const { value: token } = await Preferences.get({ key: 'auth_token' });
+  const { value: token } = await webStorage.get({ key: 'auth_token' });
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -26,8 +37,8 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Token expirado, fazer logout
-      await Preferences.remove({ key: 'auth_token' });
-      await Preferences.remove({ key: 'user_data' });
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
       window.location.href = '/login';
     }
     return Promise.reject(error);
