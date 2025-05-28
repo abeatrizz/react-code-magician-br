@@ -5,27 +5,49 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, MapPin, Camera, Upload } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const NewCaseScreen = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
-    title: '',
-    patient: '',
+    caseNumber: '',
+    patientName: '',
+    location: '',
     description: '',
     requestDate: '',
-    priority: 'Normal'
+    priority: 'Normal',
+    status: 'Em andamento'
   });
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            setImages(prev => [...prev, e.target!.result as string]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Simular criação do caso
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       toast({
@@ -62,33 +84,59 @@ const NewCaseScreen = () => {
 
       {/* Form */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-gray-800">Informações do Caso</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="title">Título do Caso</Label>
+              <Label htmlFor="caseNumber">Número do Caso</Label>
               <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                placeholder="Ex: Análise Dental - Paciente X"
+                id="caseNumber"
+                value={formData.caseNumber}
+                onChange={(e) => setFormData({...formData, caseNumber: e.target.value})}
+                placeholder="Ex: #6831121"
                 className="bg-white"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="patient">Paciente/Identificação</Label>
+              <Label htmlFor="patientName">Nome do Paciente</Label>
               <Input
-                id="patient"
-                value={formData.patient}
-                onChange={(e) => setFormData({...formData, patient: e.target.value})}
-                placeholder="Nome do paciente ou identificação"
+                id="patientName"
+                value={formData.patientName}
+                onChange={(e) => setFormData({...formData, patientName: e.target.value})}
+                placeholder="Nome completo do paciente"
                 className="bg-white"
                 required
               />
+            </div>
+
+            <div>
+              <Label htmlFor="location" className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Localização
+              </Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                placeholder="Local do exame/perícia"
+                className="bg-white"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+                <SelectTrigger className="bg-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Em andamento">Em andamento</SelectItem>
+                  <SelectItem value="Arquivado">Arquivado</SelectItem>
+                  <SelectItem value="Concluído">Concluído</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -104,7 +152,7 @@ const NewCaseScreen = () => {
             </div>
 
             <div>
-              <Label htmlFor="description">Descrição</Label>
+              <Label htmlFor="description">Descrição do Caso</Label>
               <Textarea
                 id="description"
                 value={formData.description}
@@ -113,6 +161,60 @@ const NewCaseScreen = () => {
                 className="bg-white min-h-[100px]"
                 required
               />
+            </div>
+
+            {/* Evidências */}
+            <div>
+              <Label className="flex items-center gap-2 mb-3">
+                <Camera className="w-4 h-4" />
+                Evidências
+              </Label>
+              
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <label className="flex-1">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full flex items-center gap-2"
+                      onClick={() => document.querySelector('input[type="file"]')?.click()}
+                    >
+                      <Upload className="w-4 h-4" />
+                      Adicionar Imagens
+                    </Button>
+                  </label>
+                </div>
+
+                {images.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {images.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image}
+                          alt={`Evidência ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-lg bg-white"
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          size="icon"
+                          variant="destructive"
+                          className="absolute -top-1 -right-1 w-5 h-5 text-xs"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex gap-3 pt-4">

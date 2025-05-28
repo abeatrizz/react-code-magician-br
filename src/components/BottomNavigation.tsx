@@ -42,15 +42,16 @@ const BottomNavigation = () => {
       <div className="flex justify-around items-center py-2 px-4">
         {navItems.map((item) => {
           const IconComponent = item.icon;
+          const active = isActive(item.path);
           return (
             <Button
               key={item.id}
               variant="ghost"
               onClick={() => navigate(item.path)}
               className={`flex flex-col items-center gap-1 p-3 rounded-lg transition-colors ${
-                isActive(item.path) 
-                  ? 'bg-white text-gray-800' 
-                  : 'text-gray-600 hover:text-gray-800'
+                active 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-blue-600 hover:text-blue-800 hover:bg-blue-50'
               }`}
             >
               <IconComponent className="h-6 w-6" />
