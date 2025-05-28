@@ -2,10 +2,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Plus, FileText, Camera, BarChart3, Search, Filter } from 'lucide-react';
+import { Plus, FileText, Camera, BarChart3 } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import Logo from '@/components/Logo';
@@ -65,29 +64,11 @@ const DashboardScreen = () => {
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header com Logo */}
       <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
-        <Logo size="medium" variant="dark" />
+        <Logo size="large" variant="dark" />
         <div className="text-right">
           <p className="text-sm text-gray-600">Bem-vindo</p>
           <p className="font-semibold text-gray-800">{user?.name}</p>
         </div>
-      </div>
-
-      {/* Header com busca */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Buscar caso"
-            className="pl-10 bg-white"
-          />
-        </div>
-        <Button 
-          size="icon"
-          variant="outline"
-          className="bg-white"
-        >
-          <Filter className="w-4 h-4" />
-        </Button>
       </div>
 
       {/* Gráfico de Status de Casos */}

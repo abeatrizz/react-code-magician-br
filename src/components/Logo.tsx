@@ -13,21 +13,18 @@ const Logo: React.FC<LogoProps> = ({
   className = ''
 }) => {
   const sizeClasses = {
-    small: 'text-lg font-bold',
-    medium: 'text-2xl font-bold',
-    large: 'text-4xl font-bold'
-  };
-
-  const colorClasses = {
-    light: 'text-white',
-    dark: 'text-gray-800'
+    small: 'h-6',
+    medium: 'h-8',
+    large: 'h-12'
   };
 
   return (
-    <div className={`${sizeClasses[size]} ${colorClasses[variant]} ${className}`}>
-      <span style={{ color: variant === 'dark' ? '#123458' : 'white' }}>
-        identify
-      </span>
+    <div className={`flex items-center ${className}`}>
+      <img 
+        src="/lovable-uploads/identify-logo.png" 
+        alt="identify" 
+        className={`${sizeClasses[size]} w-auto object-contain`}
+      />
     </div>
   );
 };
