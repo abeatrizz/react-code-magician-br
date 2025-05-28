@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Plus, FileText, Camera, BarChart3 } from 'lucide-react';
@@ -65,9 +66,20 @@ const DashboardScreen = () => {
       {/* Header com Logo */}
       <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
         <Logo size="large" variant="dark" />
-        <div className="text-right">
-          <p className="text-sm text-gray-600">Bem-vindo</p>
-          <p className="font-semibold text-gray-800">{user?.name}</p>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-sm text-gray-600">Bem-vindo</p>
+            <p className="font-semibold text-gray-800">{user?.name}</p>
+          </div>
+          <Avatar 
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate('/profile')}
+          >
+            <AvatarImage src="" alt={user?.name} />
+            <AvatarFallback style={{ backgroundColor: '#123458', color: 'white' }}>
+              {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         </div>
       </div>
 
