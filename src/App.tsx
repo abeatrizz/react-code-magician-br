@@ -11,6 +11,8 @@ import CaseDetailScreen from './screens/CaseDetailScreen';
 import NewCaseScreen from './screens/NewCaseScreen';
 import EvidenceScreen from './screens/EvidenceScreen';
 import ReportsScreen from './screens/ReportsScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import AdminUsersScreen from './screens/AdminUsersScreen';
 import BottomNavigation from './components/BottomNavigation';
 import './App.css';
 
@@ -38,6 +40,8 @@ function AppContent() {
         <Route path="/new-case" element={<NewCaseScreen />} />
         <Route path="/evidence/:caseId" element={<EvidenceScreen />} />
         <Route path="/reports" element={<ReportsScreen />} />
+        <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/admin/users" element={<AdminUsersScreen />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
       <BottomNavigation />

@@ -22,6 +22,12 @@ const LoginScreen = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    // Implementar lógica de esqueci minha senha
+    console.log('Esqueci minha senha clicked');
+    // navigate('/forgot-password');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#f5f5f0' }}>
       <Card className="w-full max-w-md" style={{ backgroundColor: '#D4C9BE' }}>
@@ -63,6 +69,15 @@ const LoginScreen = () => {
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
           </form>
         </CardContent>
       </Card>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Home, Plus, FolderOpen, User } from 'lucide-react';
 
 const BottomNavigation = () => {
   const navigate = useNavigate();
@@ -11,20 +12,26 @@ const BottomNavigation = () => {
     {
       id: 'home',
       label: 'Home',
-      icon: '🏠',
+      icon: Home,
       path: '/dashboard'
     },
     {
       id: 'new-case',
       label: 'Novo caso',
-      icon: '➕',
+      icon: Plus,
       path: '/new-case'
     },
     {
       id: 'cases',
       label: 'Casos',
-      icon: '📋',
+      icon: FolderOpen,
       path: '/cases'
+    },
+    {
+      id: 'profile',
+      label: 'Perfil',
+      icon: User,
+      path: '/profile'
     }
   ];
 
@@ -39,21 +46,24 @@ const BottomNavigation = () => {
       style={{ backgroundColor: '#D4C9BE' }}
     >
       <div className="flex justify-around items-center py-2 px-4">
-        {navItems.map((item) => (
-          <Button
-            key={item.id}
-            variant="ghost"
-            onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center gap-1 p-3 rounded-lg transition-colors ${
-              isActive(item.path) 
-                ? 'bg-white text-gray-800' 
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-          >
-            <span className="text-xl">{item.icon}</span>
-            <span className="text-xs font-medium">{item.label}</span>
-          </Button>
-        ))}
+        {navItems.map((item) => {
+          const IconComponent = item.icon;
+          return (
+            <Button
+              key={item.id}
+              variant="ghost"
+              onClick={() => navigate(item.path)}
+              className={`flex flex-col items-center gap-1 p-3 rounded-lg transition-colors ${
+                isActive(item.path) 
+                  ? 'bg-white text-gray-800' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <IconComponent className="h-5 w-5" />
+              <span className="text-xs font-medium">{item.label}</span>
+            </Button>
+          );
+        })}
       </div>
     </div>
   );
