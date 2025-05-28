@@ -21,8 +21,8 @@ const Logo: React.FC<LogoProps> = ({
   return (
     <div className={`flex items-center ${className}`}>
       <img 
-        src="/lovable-uploads/identify-logo.png" 
-        alt="identify" 
+        src="/lovable-uploads/1d36dd69-28ae-450d-a119-92e01f2bf92e.png" 
+        alt="IIdentify" 
         className={`${sizeClasses[size]} w-auto object-contain`}
       />
     </div>

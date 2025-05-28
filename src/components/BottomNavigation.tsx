@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Plus, FolderOpen, User } from 'lucide-react';
+import { Home, Plus, FileText } from 'lucide-react';
 
 const BottomNavigation = () => {
   const navigate = useNavigate();
@@ -24,14 +24,8 @@ const BottomNavigation = () => {
     {
       id: 'cases',
       label: 'Casos',
-      icon: FolderOpen,
+      icon: FileText,
       path: '/cases'
-    },
-    {
-      id: 'profile',
-      label: 'Perfil',
-      icon: User,
-      path: '/profile'
     }
   ];
 
@@ -59,7 +53,7 @@ const BottomNavigation = () => {
                   : 'text-gray-600 hover:text-gray-800'
               }`}
             >
-              <IconComponent className="h-5 w-5" />
+              <IconComponent className="h-6 w-6" />
               <span className="text-xs font-medium">{item.label}</span>
             </Button>
           );
