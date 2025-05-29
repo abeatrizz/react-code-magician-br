@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import CasesScreen from './screens/CasesScreen';
 import CaseDetailScreen from './screens/CaseDetailScreen';
@@ -26,6 +27,7 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
+        <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     );

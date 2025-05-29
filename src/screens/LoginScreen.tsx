@@ -23,17 +23,16 @@ const LoginScreen = () => {
   };
 
   const handleForgotPassword = () => {
-    // Implementar lógica de esqueci minha senha
-    console.log('Esqueci minha senha clicked');
-    // navigate('/forgot-password');
+    navigate('/forgot-password');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#f5f5f0' }}>
       <Card className="w-full max-w-md" style={{ backgroundColor: '#D4C9BE' }}>
         <CardHeader className="text-center">
-          <Logo size="large" variant="dark" className="mb-2" />
-          <p className="text-sm text-gray-600">Sistema de Perícia Odontológica</p>
+          <div className="flex justify-center mb-4">
+            <Logo size="large" variant="dark" />
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

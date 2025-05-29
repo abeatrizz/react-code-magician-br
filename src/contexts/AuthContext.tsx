@@ -76,29 +76,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      // Simulação de login - substituir pela chamada real da API
+      let mockUser: User;
+      
+      // Login de perito
       if (cpf === '12345678901' && password === '123456') {
-        const mockUser: User = {
+        mockUser = {
           id: '1',
           name: 'Dr. João Silva',
           email: 'joao.silva@odontolegal.com',
           cpf: cpf,
           role: 'perito'
         };
-        
-        const mockToken = 'mock_jwt_token_12345';
-        
-        await storage.set({ key: 'auth_token', value: mockToken });
-        await storage.set({ key: 'user_data', value: JSON.stringify(mockUser) });
-        
-        setUser(mockUser);
-        toast({
-          title: "Login realizado com sucesso!",
-          description: `Bem-vindo, ${mockUser.name}`,
-        });
-        
-        return true;
-      } else {
+      }
+      // Login de administrador
+      else if (cpf === '00000000000' && password === 'admin123') {
+        mockUser = {
+          id: 'admin1',
+          name: 'Administrador Sistema',
+          email: 'admin@odontolegal.com',
+          cpf: cpf,
+          role: 'admin'
+        };
+      }
+      else {
         toast({
           title: "Erro no login",
           description: "CPF ou senha incorretos",
@@ -106,6 +106,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         return false;
       }
+      
+      const mockToken = 'mock_jwt_token_12345';
+      
+      await storage.set({ key: 'auth_token', value: mockToken });
+      await storage.set({ key: 'user_data', value: JSON.stringify(mockUser) });
+      
+      setUser(mockUser);
+      toast({
+        title: "Login realizado com sucesso!",
+        description: `Bem-vindo, ${mockUser.name}`,
+      });
+      
+      return true;
     } catch (error) {
       console.error('Login error:', error);
       toast({

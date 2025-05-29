@@ -1,13 +1,10 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Plus, FileText, Camera, BarChart3 } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import Logo from '@/components/Logo';
 
 const DashboardScreen = () => {
@@ -28,37 +25,6 @@ const DashboardScreen = () => {
     { month: 'Fevereiro', cases: 90 },
     { month: 'Março', cases: 125 },
     { month: 'Abril', cases: 111 }
-  ];
-
-  const quickActions = [
-    {
-      title: 'Novo Caso',
-      description: 'Registrar novo caso pericial',
-      icon: Plus,
-      action: () => navigate('/new-case'),
-      color: '#123458'
-    },
-    {
-      title: 'Casos Ativos',
-      description: 'Ver casos em andamento',
-      icon: FileText,
-      action: () => navigate('/cases'),
-      color: '#D4C9BE'
-    },
-    {
-      title: 'Capturar Evidências',
-      description: 'Adicionar evidências aos casos',
-      icon: Camera,
-      action: () => navigate('/cases'),
-      color: '#123458'
-    },
-    {
-      title: 'Relatórios',
-      description: 'Visualizar laudos e relatórios',
-      icon: BarChart3,
-      action: () => navigate('/reports'),
-      color: '#D4C9BE'
-    }
   ];
 
   return (
@@ -154,30 +120,6 @@ const DashboardScreen = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4">
-        {quickActions.map((action, index) => (
-          <Card 
-            key={index}
-            className="cursor-pointer hover:shadow-lg transition-shadow border-0"
-            style={{ backgroundColor: action.color === '#123458' ? '#123458' : '#D4C9BE' }}
-            onClick={action.action}
-          >
-            <CardContent className="p-4 text-center">
-              <action.icon 
-                className={`w-8 h-8 mx-auto mb-2 ${action.color === '#123458' ? 'text-white' : 'text-gray-700'}`} 
-              />
-              <h3 className={`font-semibold mb-1 ${action.color === '#123458' ? 'text-white' : 'text-gray-800'}`}>
-                {action.title}
-              </h3>
-              <p className={`text-xs ${action.color === '#123458' ? 'text-gray-200' : 'text-gray-600'}`}>
-                {action.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
       {/* Stats Resumo */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
