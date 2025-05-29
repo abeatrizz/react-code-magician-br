@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Camera, Upload, Tooth } from 'lucide-react';
+import { ChevronLeft, MapPin, Camera, Upload, Circle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import DentalChart from '@/components/DentalChart';
 
@@ -215,7 +215,7 @@ const NewCaseScreen = () => {
             {/* Evidências Dentárias */}
             <div>
               <Label className="flex items-center gap-2 mb-3">
-                <Tooth className="w-4 h-4" />
+                <Circle className="w-4 h-4" />
                 Evidências Dentárias
               </Label>
               <DentalChart
