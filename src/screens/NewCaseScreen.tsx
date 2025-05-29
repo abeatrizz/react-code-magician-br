@@ -67,6 +67,13 @@ const NewCaseScreen = () => {
     }
   };
 
+  const triggerFileInput = () => {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
@@ -172,24 +179,23 @@ const NewCaseScreen = () => {
               
               <div className="space-y-3">
                 <div className="flex gap-2">
-                  <label className="flex-1">
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full flex items-center gap-2"
-                      onClick={() => document.querySelector('input[type="file"]')?.click()}
-                    >
-                      <Upload className="w-4 h-4" />
-                      Adicionar Imagens
-                    </Button>
-                  </label>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="file-input"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full flex items-center gap-2"
+                    onClick={triggerFileInput}
+                  >
+                    <Upload className="w-4 h-4" />
+                    Adicionar Imagens
+                  </Button>
                 </div>
 
                 {images.length > 0 && (
