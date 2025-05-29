@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 
@@ -37,6 +36,7 @@ interface User {
   email: string;
   cpf: string;
   role: 'admin' | 'perito' | 'assistente';
+  profileImage?: string;
 }
 
 interface AuthContextType {
@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: 'Dr. João Silva',
           email: 'joao.silva@odontolegal.com',
           cpf: cpf,
-          role: 'perito'
+          role: 'perito',
         };
       }
       // Login de administrador
@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: 'Administrador Sistema',
           email: 'admin@odontolegal.com',
           cpf: cpf,
-          role: 'admin'
+          role: 'admin',
         };
       }
       else {
