@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronLeft, Camera, Upload } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ChevronLeft, Camera, Upload, AlertCircle } from 'lucide-react';
 import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { toast } from '@/hooks/use-toast';
 
@@ -16,6 +16,10 @@ const EvidenceScreen = () => {
   const [images, setImages] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Mock data do caso - em produção, buscar da API
+  const caseStatus = 'Em andamento'; // 'Em andamento', 'Arquivado', 'Concluído'
+  const canAddEvidence = caseStatus === 'Em andamento';
 
   const takePhoto = async () => {
     try {
@@ -107,6 +111,75 @@ const EvidenceScreen = () => {
     }
   };
 
+  if (!canAddEvidence) {
+    return (
+      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(`/cases/${caseId}`)}
+            className="text-gray-600"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="text-xl font-bold text-gray-800">Evidências do Caso</h1>
+        </div>
+
+        {/* Status Warning */}
+        <Card className="bg-orange-50 border-orange-200">
+          <CardContent className="p-4 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-orange-600" />
+            <div>
+              <h3 className="font-medium text-orange-800">Caso não permite novas evidências</h3>
+              <p className="text-sm text-orange-700">
+                Este caso está com status "{caseStatus}" e não permite adição de novas evidências.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Existing Evidences - Mock data */}
+        <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-gray-800">Evidências Existentes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800">Radiografia panorâmica</p>
+                  <p className="text-sm text-gray-600">Foto • 2024-01-15</p>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => navigate(`/evidence/${caseId}/1`)}
+                >
+                  Ver
+                </Button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800">Foto intraoral</p>
+                  <p className="text-sm text-gray-600">Foto • 2024-01-15</p>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => navigate(`/evidence/${caseId}/2`)}
+                >
+                  Ver
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
@@ -119,7 +192,12 @@ const EvidenceScreen = () => {
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-xl font-bold text-gray-800">Capturar Evidências</h1>
+        <div className="flex-1">
+          <h1 className="text-xl font-bold text-gray-800">Capturar Evidências</h1>
+          <Badge variant="outline" className="mt-1">
+            Status: {caseStatus}
+          </Badge>
+        </div>
       </div>
 
       {/* Camera Actions */}

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { ChevronLeft, MapPin, Camera, Upload, Circle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import DentalChart from '@/components/DentalChart';
 import VictimManager from '@/components/VictimManager';
+import LocationMap from '@/components/LocationMap';
 
 interface ToothEvidence {
   toothNumber: number;
@@ -187,17 +187,10 @@ const NewCaseScreen = () => {
                 <MapPin className="w-4 h-4" />
                 Localização
               </Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                placeholder="Local do exame/perícia"
-                className="bg-white"
-                required
+              <LocationMap
+                location={formData.location}
+                onLocationChange={(location) => setFormData({...formData, location})}
               />
-              <p className="text-xs text-gray-600 mt-1">
-                * Mapa será exibido quando uma localização for inserida
-              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
