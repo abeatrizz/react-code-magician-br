@@ -10,10 +10,19 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Camera, Upload, Circle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import DentalChart from '@/components/DentalChart';
+import VictimManager from '@/components/VictimManager';
 
 interface ToothEvidence {
   toothNumber: number;
   image?: string;
+  notes?: string;
+}
+
+interface Victim {
+  id: string;
+  name: string;
+  age?: string;
+  gender?: string;
   notes?: string;
 }
 
@@ -22,9 +31,9 @@ const NewCaseScreen = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [dentalEvidences, setDentalEvidences] = useState<ToothEvidence[]>([]);
+  const [victims, setVictims] = useState<Victim[]>([]);
   const [formData, setFormData] = useState({
     caseNumber: '',
-    patientName: '',
     location: '',
     description: '',
     requestDate: '',
@@ -83,6 +92,16 @@ const NewCaseScreen = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (victims.length === 0) {
+      toast({
+        title: "Erro de validação",
+        description: "É necessário adicionar pelo menos uma vítima/paciente.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -90,7 +109,7 @@ const NewCaseScreen = () => {
       
       toast({
         title: "Caso criado com sucesso!",
-        description: `Caso registrado com ${dentalEvidences.length} evidências dentárias.`
+        description: `Caso registrado com ${victims.length} vítima(s) e ${dentalEvidences.length} evidências dentárias.`
       });
       
       navigate('/cases');
@@ -145,17 +164,23 @@ const NewCaseScreen = () => {
               </div>
 
               <div>
-                <Label htmlFor="patientName">Nome do Paciente</Label>
+                <Label htmlFor="requestDate">Data de Solicitação</Label>
                 <Input
-                  id="patientName"
-                  value={formData.patientName}
-                  onChange={(e) => setFormData({...formData, patientName: e.target.value})}
-                  placeholder="Nome completo do paciente"
+                  id="requestDate"
+                  type="date"
+                  value={formData.requestDate}
+                  onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
                   className="bg-white"
                   required
                 />
               </div>
             </div>
+
+            {/* Gerenciador de Vítimas */}
+            <VictimManager
+              victims={victims}
+              onVictimsChange={setVictims}
+            />
 
             <div>
               <Label htmlFor="location" className="flex items-center gap-2">
@@ -170,6 +195,9 @@ const NewCaseScreen = () => {
                 className="bg-white"
                 required
               />
+              <p className="text-xs text-gray-600 mt-1">
+                * Mapa será exibido quando uma localização for inserida
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,15 +216,18 @@ const NewCaseScreen = () => {
               </div>
 
               <div>
-                <Label htmlFor="requestDate">Data de Solicitação</Label>
-                <Input
-                  id="requestDate"
-                  type="date"
-                  value={formData.requestDate}
-                  onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
-                  className="bg-white"
-                  required
-                />
+                <Label htmlFor="priority">Prioridade</Label>
+                <Select value={formData.priority} onValueChange={(value) => setFormData({...formData, priority: value})}>
+                  <SelectTrigger className="bg-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Baixa">Baixa</SelectItem>
+                    <SelectItem value="Normal">Normal</SelectItem>
+                    <SelectItem value="Alta">Alta</SelectItem>
+                    <SelectItem value="Urgente">Urgente</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

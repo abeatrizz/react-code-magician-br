@@ -11,6 +11,7 @@ import CasesScreen from './screens/CasesScreen';
 import CaseDetailScreen from './screens/CaseDetailScreen';
 import NewCaseScreen from './screens/NewCaseScreen';
 import EvidenceScreen from './screens/EvidenceScreen';
+import EvidenceDetailScreen from './screens/EvidenceDetailScreen';
 import ReportsScreen from './screens/ReportsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AdminUsersScreen from './screens/AdminUsersScreen';
@@ -41,6 +42,7 @@ function AppContent() {
         <Route path="/cases/:id" element={<CaseDetailScreen />} />
         <Route path="/new-case" element={<NewCaseScreen />} />
         <Route path="/evidence/:caseId" element={<EvidenceScreen />} />
+        <Route path="/evidence/:caseId/:evidenceId" element={<EvidenceDetailScreen />} />
         <Route path="/reports" element={<ReportsScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/admin/users" element={<AdminUsersScreen />} />
