@@ -7,13 +7,21 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Camera, Upload } from 'lucide-react';
+import { ChevronLeft, MapPin, Camera, Upload, Tooth } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import DentalChart from '@/components/DentalChart';
+
+interface ToothEvidence {
+  toothNumber: number;
+  image?: string;
+  notes?: string;
+}
 
 const NewCaseScreen = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [dentalEvidences, setDentalEvidences] = useState<ToothEvidence[]>([]);
   const [formData, setFormData] = useState({
     caseNumber: '',
     patientName: '',
@@ -43,6 +51,36 @@ const NewCaseScreen = () => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDentalEvidenceAdd = (evidence: ToothEvidence) => {
+    setDentalEvidences(prev => {
+      const existing = prev.find(e => e.toothNumber === evidence.toothNumber);
+      if (existing) {
+        return prev;
+      }
+      return [...prev, evidence];
+    });
+  };
+
+  const handleDentalEvidenceRemove = (toothNumber: number) => {
+    setDentalEvidences(prev => prev.filter(e => e.toothNumber !== toothNumber));
+  };
+
+  const handleDentalImageUpload = (toothNumber: number, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setDentalEvidences(prev => 
+          prev.map(evidence => 
+            evidence.toothNumber === toothNumber 
+              ? { ...evidence, image: e.target!.result as string }
+              : evidence
+          )
+        );
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -52,7 +90,7 @@ const NewCaseScreen = () => {
       
       toast({
         title: "Caso criado com sucesso!",
-        description: "O novo caso foi registrado no sistema."
+        description: `Caso registrado com ${dentalEvidences.length} evidências dentárias.`
       });
       
       navigate('/cases');
@@ -77,7 +115,7 @@ const NewCaseScreen = () => {
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 mb-6">
         <Button
           variant="ghost"
           size="icon"
@@ -92,29 +130,31 @@ const NewCaseScreen = () => {
       {/* Form */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
         <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="caseNumber">Número do Caso</Label>
-              <Input
-                id="caseNumber"
-                value={formData.caseNumber}
-                onChange={(e) => setFormData({...formData, caseNumber: e.target.value})}
-                placeholder="Ex: #6831121"
-                className="bg-white"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="caseNumber">Número do Caso</Label>
+                <Input
+                  id="caseNumber"
+                  value={formData.caseNumber}
+                  onChange={(e) => setFormData({...formData, caseNumber: e.target.value})}
+                  placeholder="Ex: #6831121"
+                  className="bg-white"
+                  required
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="patientName">Nome do Paciente</Label>
-              <Input
-                id="patientName"
-                value={formData.patientName}
-                onChange={(e) => setFormData({...formData, patientName: e.target.value})}
-                placeholder="Nome completo do paciente"
-                className="bg-white"
-                required
-              />
+              <div>
+                <Label htmlFor="patientName">Nome do Paciente</Label>
+                <Input
+                  id="patientName"
+                  value={formData.patientName}
+                  onChange={(e) => setFormData({...formData, patientName: e.target.value})}
+                  placeholder="Nome completo do paciente"
+                  className="bg-white"
+                  required
+                />
+              </div>
             </div>
 
             <div>
@@ -132,30 +172,32 @@ const NewCaseScreen = () => {
               />
             </div>
 
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Em andamento">Em andamento</SelectItem>
-                  <SelectItem value="Arquivado">Arquivado</SelectItem>
-                  <SelectItem value="Concluído">Concluído</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+                  <SelectTrigger className="bg-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Em andamento">Em andamento</SelectItem>
+                    <SelectItem value="Arquivado">Arquivado</SelectItem>
+                    <SelectItem value="Concluído">Concluído</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <Label htmlFor="requestDate">Data de Solicitação</Label>
-              <Input
-                id="requestDate"
-                type="date"
-                value={formData.requestDate}
-                onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
-                className="bg-white"
-                required
-              />
+              <div>
+                <Label htmlFor="requestDate">Data de Solicitação</Label>
+                <Input
+                  id="requestDate"
+                  type="date"
+                  value={formData.requestDate}
+                  onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
+                  className="bg-white"
+                  required
+                />
+              </div>
             </div>
 
             <div>
@@ -170,11 +212,25 @@ const NewCaseScreen = () => {
               />
             </div>
 
-            {/* Evidências */}
+            {/* Evidências Dentárias */}
+            <div>
+              <Label className="flex items-center gap-2 mb-3">
+                <Tooth className="w-4 h-4" />
+                Evidências Dentárias
+              </Label>
+              <DentalChart
+                evidences={dentalEvidences}
+                onEvidenceAdd={handleDentalEvidenceAdd}
+                onEvidenceRemove={handleDentalEvidenceRemove}
+                onImageUpload={handleDentalImageUpload}
+              />
+            </div>
+
+            {/* Evidências Gerais */}
             <div>
               <Label className="flex items-center gap-2 mb-3">
                 <Camera className="w-4 h-4" />
-                Evidências
+                Evidências Gerais
               </Label>
               
               <div className="space-y-3">
@@ -190,7 +246,7 @@ const NewCaseScreen = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full flex items-center gap-2"
+                    className="w-full flex items-center justify-center gap-2"
                     onClick={triggerFileInput}
                   >
                     <Upload className="w-4 h-4" />

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Calendar, User, Filter, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Filter, Edit, Trash2 } from 'lucide-react';
 import Logo from '@/components/Logo';
 
 const CasesScreen = () => {
@@ -25,7 +25,7 @@ const CasesScreen = () => {
       description: 'Descrição do caso'
     },
     {
-      id: '6831121', 
+      id: '6831122', 
       title: 'Morte em Santo Amaro',
       status: 'Em andamento',
       date: '2024-01-10',
@@ -34,7 +34,7 @@ const CasesScreen = () => {
       description: 'Descrição do caso'
     },
     {
-      id: '003',
+      id: '6831123',
       title: 'Perícia Ortodôntica',
       status: 'Concluído',
       date: '2024-01-08',
@@ -63,19 +63,20 @@ const CasesScreen = () => {
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+      <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
         <Logo size="medium" variant="dark" />
         <Button 
           onClick={() => navigate('/new-case')}
+          className="flex items-center gap-2"
           style={{ backgroundColor: '#123458' }}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4" />
           Novo Caso
         </Button>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
@@ -86,14 +87,14 @@ const CasesScreen = () => {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-12 bg-white">
+          <SelectTrigger className="w-12 bg-white flex items-center justify-center">
             <Filter className="h-4 w-4" style={{ color: '#123458' }} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="ativo">Ativo</SelectItem>
-            <SelectItem value="concluido">Concluído</SelectItem>
-            <SelectItem value="arquivado">Arquivado</SelectItem>
+            <SelectItem value="Em andamento">Em andamento</SelectItem>
+            <SelectItem value="Concluído">Concluído</SelectItem>
+            <SelectItem value="Arquivado">Arquivado</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -109,15 +110,15 @@ const CasesScreen = () => {
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-2">
                     <h3 className="font-semibold text-gray-800">Caso #{case_.id}</h3>
                     <Badge className={getStatusColor(case_.status)}>
                       {case_.status}
                     </Badge>
                   </div>
-                  <p className="text-lg font-medium text-gray-900 mb-1">{case_.title}</p>
+                  <p className="text-lg font-medium text-gray-900 mb-2">{case_.title}</p>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex items-center gap-1">
                   <Button
                     size="icon"
                     variant="ghost"
@@ -141,6 +142,11 @@ const CasesScreen = () => {
               </div>
 
               <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <span>Perito: {case_.perito}</span>
+                  <span>Data: {case_.date}</span>
+                  <span>Evidências: {case_.evidences}</span>
+                </div>
                 <Button
                   variant="link"
                   className="text-blue-600 p-0 h-auto text-sm"
