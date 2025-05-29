@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, UserCheck, UserX, Users } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, UserCheck, UserX, Users, Activity } from 'lucide-react';
 import Logo from '@/components/Logo';
 
 interface User {
@@ -17,6 +18,15 @@ interface User {
   cpf: string;
   role: 'admin' | 'perito' | 'assistente';
   active: boolean;
+  lastLogin?: string;
+  casesHandled?: number;
+}
+
+interface UserActivity {
+  id: string;
+  action: string;
+  timestamp: string;
+  details: string;
 }
 
 const AdminUsersScreen = () => {
@@ -28,7 +38,9 @@ const AdminUsersScreen = () => {
       email: 'joao.silva@odontolegal.com',
       cpf: '12345678901',
       role: 'perito',
-      active: true
+      active: true,
+      lastLogin: '2024-01-15 14:30',
+      casesHandled: 23
     },
     {
       id: '2',
@@ -36,7 +48,9 @@ const AdminUsersScreen = () => {
       email: 'maria.santos@odontolegal.com',
       cpf: '10987654321',
       role: 'perito',
-      active: true
+      active: true,
+      lastLogin: '2024-01-15 09:15',
+      casesHandled: 18
     },
     {
       id: '3',
@@ -44,7 +58,31 @@ const AdminUsersScreen = () => {
       email: 'ana.oliveira@odontolegal.com',
       cpf: '11122233344',
       role: 'assistente',
-      active: false
+      active: false,
+      lastLogin: '2024-01-10 16:45',
+      casesHandled: 5
+    }
+  ]);
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [userActivities, setUserActivities] = useState<UserActivity[]>([
+    {
+      id: '1',
+      action: 'Login',
+      timestamp: '2024-01-15 14:30',
+      details: 'Acesso ao sistema'
+    },
+    {
+      id: '2',
+      action: 'Caso Criado',
+      timestamp: '2024-01-15 14:35',
+      details: 'Caso #2024-001 - Perícia Odontológica'
+    },
+    {
+      id: '3',
+      action: 'Evidência Adicionada',
+      timestamp: '2024-01-15 15:20',
+      details: 'Caso #2024-001 - 3 imagens'
     }
   ]);
 
@@ -56,7 +94,10 @@ const AdminUsersScreen = () => {
     password: ''
   });
 
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
 
   const handleCreateUser = () => {
     const user: User = {
@@ -65,17 +106,37 @@ const AdminUsersScreen = () => {
       email: newUser.email,
       cpf: newUser.cpf,
       role: newUser.role,
-      active: true
+      active: true,
+      casesHandled: 0
     };
     setUsers([...users, user]);
     setNewUser({ name: '', email: '', cpf: '', role: 'perito', password: '' });
     setIsDialogOpen(false);
   };
 
+  const handleEditUser = () => {
+    if (!editingUser) return;
+    setUsers(users.map(user => 
+      user.id === editingUser.id ? editingUser : user
+    ));
+    setEditingUser(null);
+    setIsEditDialogOpen(false);
+  };
+
   const toggleUserStatus = (userId: string) => {
     setUsers(users.map(user => 
       user.id === userId ? { ...user, active: !user.active } : user
     ));
+  };
+
+  const openEditDialog = (user: User) => {
+    setEditingUser({ ...user });
+    setIsEditDialogOpen(true);
+  };
+
+  const openActivityDialog = (user: User) => {
+    setSelectedUser(user);
+    setIsActivityDialogOpen(true);
   };
 
   const activeUsers = users.filter(user => user.active);
@@ -182,6 +243,8 @@ const AdminUsersScreen = () => {
                 <TableHead>Nome</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Função</TableHead>
+                <TableHead>Casos</TableHead>
+                <TableHead>Último Acesso</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -191,13 +254,28 @@ const AdminUsersScreen = () => {
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {user.role === 'admin' ? 'Administrador' : 
-                     user.role === 'perito' ? 'Perito' : 'Assistente'}
+                    <Badge variant="outline">
+                      {user.role === 'admin' ? 'Administrador' : 
+                       user.role === 'perito' ? 'Perito' : 'Assistente'}
+                    </Badge>
                   </TableCell>
+                  <TableCell>{user.casesHandled || 0}</TableCell>
+                  <TableCell className="text-sm text-gray-600">{user.lastLogin}</TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                    <div className="flex gap-1">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => openEditDialog(user)}
+                      >
                         <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => openActivityDialog(user)}
+                      >
+                        <Activity className="h-4 w-4" />
                       </Button>
                       <Button 
                         size="sm" 
@@ -239,8 +317,10 @@ const AdminUsersScreen = () => {
                   <TableCell className="text-gray-500">{user.name}</TableCell>
                   <TableCell className="text-gray-500">{user.email}</TableCell>
                   <TableCell className="text-gray-500">
-                    {user.role === 'admin' ? 'Administrador' : 
-                     user.role === 'perito' ? 'Perito' : 'Assistente'}
+                    <Badge variant="secondary">
+                      {user.role === 'admin' ? 'Administrador' : 
+                       user.role === 'perito' ? 'Perito' : 'Assistente'}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Button 
@@ -257,6 +337,98 @@ const AdminUsersScreen = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Dialog de Edição */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Usuário</DialogTitle>
+          </DialogHeader>
+          {editingUser && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-name">Nome Completo</Label>
+                <Input
+                  id="edit-name"
+                  value={editingUser.name}
+                  onChange={(e) => setEditingUser({...editingUser, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-email">Email</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={editingUser.email}
+                  onChange={(e) => setEditingUser({...editingUser, email: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-role">Função</Label>
+                <select
+                  id="edit-role"
+                  value={editingUser.role}
+                  onChange={(e) => setEditingUser({...editingUser, role: e.target.value as 'admin' | 'perito' | 'assistente'})}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="perito">Perito</option>
+                  <option value="assistente">Assistente</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleEditUser}
+                  style={{ backgroundColor: '#123458' }}
+                  className="flex-1"
+                >
+                  Salvar
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Atividades */}
+      <Dialog open={isActivityDialogOpen} onOpenChange={setIsActivityDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Movimentações de {selectedUser?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="max-h-96 overflow-y-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ação</TableHead>
+                    <TableHead>Data/Hora</TableHead>
+                    <TableHead>Detalhes</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {userActivities.map((activity) => (
+                    <TableRow key={activity.id}>
+                      <TableCell>
+                        <Badge variant="outline">{activity.action}</Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">{activity.timestamp}</TableCell>
+                      <TableCell className="text-sm">{activity.details}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

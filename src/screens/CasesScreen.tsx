@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Calendar, User, Filter, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Calendar, User, Filter } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 const CasesScreen = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('todos');
 
   const mockCases = [
     {
@@ -46,7 +46,7 @@ const CasesScreen = () => {
   const filteredCases = mockCases.filter(case_ => {
     const matchesSearch = case_.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          case_.id.includes(searchTerm);
-    const matchesStatus = statusFilter === 'all' || case_.status === statusFilter;
+    const matchesStatus = statusFilter === 'todos' || case_.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -62,38 +62,37 @@ const CasesScreen = () => {
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Casos</h1>
+      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+        <Logo size="medium" variant="dark" />
         <Button 
           onClick={() => navigate('/new-case')}
-          size="icon"
           style={{ backgroundColor: '#123458' }}
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="h-4 w-4 mr-2" />
+          Novo Caso
         </Button>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Buscar caso"
+            placeholder="Buscar casos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-white"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40 bg-white">
-            <Filter className="w-4 h-4 mr-2" />
-            <SelectValue />
+          <SelectTrigger className="w-12 bg-white">
+            <Filter className="h-4 w-4" style={{ color: '#123458' }} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="Em andamento">Em andamento</SelectItem>
-            <SelectItem value="Arquivado">Arquivado</SelectItem>
-            <SelectItem value="Concluído">Concluído</SelectItem>
+            <SelectItem value="todos">Todos</SelectItem>
+            <SelectItem value="ativo">Ativo</SelectItem>
+            <SelectItem value="concluido">Concluído</SelectItem>
+            <SelectItem value="arquivado">Arquivado</SelectItem>
           </SelectContent>
         </Select>
       </div>

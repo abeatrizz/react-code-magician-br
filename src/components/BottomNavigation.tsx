@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Plus, FileText, Camera, BarChart3 } from 'lucide-react';
+import { Home, Plus, FileText, BarChart3 } from 'lucide-react';
 
 const BottomNavigation = () => {
   const navigate = useNavigate();
@@ -25,12 +25,6 @@ const BottomNavigation = () => {
       id: 'cases',
       label: 'Casos',
       icon: FileText,
-      path: '/cases'
-    },
-    {
-      id: 'evidence',
-      label: 'Evidências',
-      icon: Camera,
       path: '/cases'
     },
     {
