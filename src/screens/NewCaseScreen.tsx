@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Camera, Upload, Circle } from 'lucide-react';
+import { ChevronLeft, MapPin, Camera, Upload, Circle, Mic, MicOff, Play, Square } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import DentalChart from '@/components/DentalChart';
 import VictimManager from '@/components/VictimManager';
@@ -32,6 +32,8 @@ const NewCaseScreen = () => {
   const [images, setImages] = useState<string[]>([]);
   const [dentalEvidences, setDentalEvidences] = useState<ToothEvidence[]>([]);
   const [victims, setVictims] = useState<Victim[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioNote, setAudioNote] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     caseNumber: '',
     location: '',
@@ -90,6 +92,39 @@ const NewCaseScreen = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleAudioRecord = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      // Simular finalização da gravação
+      setAudioNote("Audio gravado com sucesso");
+      toast({
+        title: "Gravação finalizada",
+        description: "Nota de áudio salva com sucesso."
+      });
+    } else {
+      setIsRecording(true);
+      toast({
+        title: "Gravação iniciada",
+        description: "Fale sua observação sobre o caso."
+      });
+    }
+  };
+
+  const playAudioNote = () => {
+    toast({
+      title: "Reproduzindo áudio",
+      description: "Reproduzindo nota de áudio gravada."
+    });
+  };
+
+  const removeAudioNote = () => {
+    setAudioNote(null);
+    toast({
+      title: "Áudio removido",
+      description: "Nota de áudio foi removida."
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -132,199 +167,298 @@ const NewCaseScreen = () => {
   };
 
   return (
-    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/cases')}
-          className="text-gray-600"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-xl font-bold text-gray-800">Novo Caso</h1>
+    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header com gradiente */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/cases')}
+            className="text-white hover:bg-white/20"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-bold">Novo Caso</h1>
+            <p className="text-blue-100 text-sm">Registrar nova perícia</p>
+          </div>
+        </div>
       </div>
 
-      {/* Form */}
-      <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="caseNumber">Número do Caso</Label>
-                <Input
-                  id="caseNumber"
-                  value={formData.caseNumber}
-                  onChange={(e) => setFormData({...formData, caseNumber: e.target.value})}
-                  placeholder="Ex: #6831121"
-                  className="bg-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="requestDate">Data de Solicitação</Label>
-                <Input
-                  id="requestDate"
-                  type="date"
-                  value={formData.requestDate}
-                  onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
-                  className="bg-white"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Gerenciador de Vítimas */}
-            <VictimManager
-              victims={victims}
-              onVictimsChange={setVictims}
-            />
-
-            <div>
-              <Label htmlFor="location" className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                Localização
-              </Label>
-              <LocationMap
-                location={formData.location}
-                onLocationChange={(location) => setFormData({...formData, location})}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Em andamento">Em andamento</SelectItem>
-                    <SelectItem value="Arquivado">Arquivado</SelectItem>
-                    <SelectItem value="Concluído">Concluído</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="priority">Prioridade</Label>
-                <Select value={formData.priority} onValueChange={(value) => setFormData({...formData, priority: value})}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Baixa">Baixa</SelectItem>
-                    <SelectItem value="Normal">Normal</SelectItem>
-                    <SelectItem value="Alta">Alta</SelectItem>
-                    <SelectItem value="Urgente">Urgente</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="description">Descrição do Caso</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Descreva os detalhes do caso, objetivo da perícia, informações relevantes..."
-                className="bg-white min-h-[100px]"
-                required
-              />
-            </div>
-
-            {/* Evidências Dentárias */}
-            <div>
-              <Label className="flex items-center gap-2 mb-3">
-                <Circle className="w-4 h-4" />
-                Evidências Dentárias
-              </Label>
-              <DentalChart
-                evidences={dentalEvidences}
-                onEvidenceAdd={handleDentalEvidenceAdd}
-                onEvidenceRemove={handleDentalEvidenceRemove}
-                onImageUpload={handleDentalImageUpload}
-              />
-            </div>
-
-            {/* Evidências Gerais */}
-            <div>
-              <Label className="flex items-center gap-2 mb-3">
-                <Camera className="w-4 h-4" />
-                Evidências Gerais
-              </Label>
-              
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="file-input"
+      <div className="p-4 pb-24 space-y-6">
+        {/* Card principal com sombra e bordas arredondadas */}
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50">
+          <CardHeader className="bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <Circle className="w-5 h-5" />
+              Informações do Caso
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Grid responsivo para campos principais */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="caseNumber" className="text-sm font-semibold text-gray-700">
+                    Número do Caso
+                  </Label>
+                  <Input
+                    id="caseNumber"
+                    value={formData.caseNumber}
+                    onChange={(e) => setFormData({...formData, caseNumber: e.target.value})}
+                    placeholder="Ex: #6831121"
+                    className="bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg h-12"
+                    required
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full flex items-center justify-center gap-2"
-                    onClick={triggerFileInput}
-                  >
-                    <Upload className="w-4 h-4" />
-                    Adicionar Imagens
-                  </Button>
                 </div>
 
-                {images.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
-                    {images.map((image, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={image}
-                          alt={`Evidência ${index + 1}`}
-                          className="w-full h-20 object-cover rounded-lg bg-white"
-                        />
+                <div className="space-y-2">
+                  <Label htmlFor="requestDate" className="text-sm font-semibold text-gray-700">
+                    Data de Solicitação
+                  </Label>
+                  <Input
+                    id="requestDate"
+                    type="date"
+                    value={formData.requestDate}
+                    onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
+                    className="bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg h-12"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Gerenciador de Vítimas com card destacado */}
+              <Card className="bg-blue-50 border-2 border-blue-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-blue-800 text-lg">Vítimas/Pacientes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <VictimManager
+                    victims={victims}
+                    onVictimsChange={setVictims}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Localização */}
+              <Card className="bg-green-50 border-2 border-green-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-green-800">
+                    <MapPin className="w-5 h-5" />
+                    Localização
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <LocationMap
+                    location={formData.location}
+                    onLocationChange={(location) => setFormData({...formData, location})}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Status e Prioridade */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="status" className="text-sm font-semibold text-gray-700">Status</Label>
+                  <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+                    <SelectTrigger className="bg-white border-2 border-gray-200 h-12 rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Em andamento">Em andamento</SelectItem>
+                      <SelectItem value="Arquivado">Arquivado</SelectItem>
+                      <SelectItem value="Concluído">Concluído</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priority" className="text-sm font-semibold text-gray-700">Prioridade</Label>
+                  <Select value={formData.priority} onValueChange={(value) => setFormData({...formData, priority: value})}>
+                    <SelectTrigger className="bg-white border-2 border-gray-200 h-12 rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Baixa">Baixa</SelectItem>
+                      <SelectItem value="Normal">Normal</SelectItem>
+                      <SelectItem value="Alta">Alta</SelectItem>
+                      <SelectItem value="Urgente">Urgente</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Descrição com áudio */}
+              <div className="space-y-4">
+                <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
+                  Descrição do Caso
+                </Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  placeholder="Descreva os detalhes do caso, objetivo da perícia, informações relevantes..."
+                  className="bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg min-h-[120px]"
+                  required
+                />
+                
+                {/* Sistema de áudio */}
+                <Card className="bg-purple-50 border-2 border-purple-200 p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-purple-800 font-semibold">Nota de Áudio</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={isRecording ? "destructive" : "default"}
+                        onClick={handleAudioRecord}
+                        className={isRecording ? "bg-red-500 hover:bg-red-600" : "bg-purple-600 hover:bg-purple-700"}
+                      >
+                        {isRecording ? (
+                          <>
+                            <Square className="w-4 h-4 mr-1" />
+                            Parar
+                          </>
+                        ) : (
+                          <>
+                            <Mic className="w-4 h-4 mr-1" />
+                            Gravar
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {audioNote && (
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border">
+                      <span className="text-sm text-gray-600">Nota de áudio gravada</span>
+                      <div className="flex gap-2">
                         <Button
                           type="button"
-                          onClick={() => removeImage(index)}
-                          size="icon"
-                          variant="destructive"
-                          className="absolute -top-1 -right-1 w-5 h-5 text-xs"
+                          size="sm"
+                          variant="outline"
+                          onClick={playAudioNote}
+                        >
+                          <Play className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={removeAudioNote}
                         >
                           ×
                         </Button>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  )}
+                  
+                  {isRecording && (
+                    <div className="flex items-center gap-2 text-red-600">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm">Gravando...</span>
+                    </div>
+                  )}
+                </Card>
               </div>
-            </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate('/cases')}
-                className="flex-1"
-                style={{ borderColor: '#123458', color: '#123458' }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="flex-1"
-                style={{ backgroundColor: '#123458' }}
-              >
-                {loading ? 'Criando...' : 'Criar Caso'}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              {/* Evidências Dentárias */}
+              <Card className="bg-orange-50 border-2 border-orange-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                    <Circle className="w-5 h-5" />
+                    Evidências Dentárias
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DentalChart
+                    evidences={dentalEvidences}
+                    onEvidenceAdd={handleDentalEvidenceAdd}
+                    onEvidenceRemove={handleDentalEvidenceRemove}
+                    onImageUpload={handleDentalImageUpload}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Evidências Gerais */}
+              <Card className="bg-yellow-50 border-2 border-yellow-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-yellow-800">
+                    <Camera className="w-5 h-5" />
+                    Evidências Gerais
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="file-input"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full h-12 border-2 border-dashed border-yellow-400 text-yellow-700 hover:bg-yellow-100 rounded-lg"
+                      onClick={triggerFileInput}
+                    >
+                      <Upload className="w-5 h-5 mr-2" />
+                      Adicionar Imagens
+                    </Button>
+
+                    {images.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {images.map((image, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={image}
+                              alt={`Evidência ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-lg bg-white border-2 border-gray-200 shadow-sm"
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              size="icon"
+                              variant="destructive"
+                              className="absolute -top-2 -right-2 w-6 h-6 text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Botões de ação */}
+              <div className="flex gap-3 pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/cases')}
+                  className="flex-1 h-12 border-2"
+                  style={{ borderColor: '#123458', color: '#123458' }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 h-12 text-white font-semibold"
+                  style={{ backgroundColor: '#123458' }}
+                >
+                  {loading ? 'Criando...' : 'Criar Caso'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
