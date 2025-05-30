@@ -61,9 +61,9 @@ const ReportsScreen = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'Laudo Completo': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'Relatório Parcial': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'Análise IA': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
+      case 'Laudo Completo': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'Relatório Parcial': return 'bg-gray-100 text-gray-700 border-gray-200';
+      case 'Análise IA': return 'bg-gray-100 text-gray-700 border-gray-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -159,22 +159,22 @@ const ReportsScreen = () => {
           </p>
         </div>
 
-        {/* Notas de áudio simuladas */}
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+        {/* Notas de áudio simuladas com cores neutras */}
+        <div className="bg-gray-50 p-4 rounded-lg border">
+          <h3 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
             <Mic className="w-4 h-4" />
             Notas de Áudio
           </h3>
           <div className="space-y-2">
-            <div className="flex items-center justify-between bg-white p-2 rounded border">
+            <div className="flex items-center justify-between bg-white p-2 rounded border border-gray-200">
               <span className="text-sm text-gray-600">Observações iniciais - 2:15</span>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" className="border-gray-300">
                 <Play className="w-3 h-3" />
               </Button>
             </div>
-            <div className="flex items-center justify-between bg-white p-2 rounded border">
+            <div className="flex items-center justify-between bg-white p-2 rounded border border-gray-200">
               <span className="text-sm text-gray-600">Conclusões finais - 1:45</span>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" className="border-gray-300">
                 <Play className="w-3 h-3" />
               </Button>
             </div>
@@ -186,19 +186,19 @@ const ReportsScreen = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header com gradiente */}
-      <div className="bg-gradient-to-r from-purple-600 to-purple-800 text-white p-4 shadow-lg">
+      {/* Header com cores originais */}
+      <div className="bg-gradient-to-r from-gray-700 to-gray-900 text-white p-4 shadow-lg">
         <div className="flex items-center gap-3">
           <FileText className="w-7 h-7" />
           <div>
             <h1 className="text-xl font-bold">Relatórios e Laudos</h1>
-            <p className="text-purple-100 text-sm">Consulte e baixe seus relatórios</p>
+            <p className="text-gray-300 text-sm">Consulte e baixe seus relatórios</p>
           </div>
         </div>
       </div>
 
       <div className="p-4 pb-24 space-y-4">
-        {/* Filtros melhorados */}
+        {/* Filtros com cores neutras */}
         <Card className="border-0 shadow-lg bg-white">
           <CardContent className="p-4">
             <div className="space-y-3">
@@ -208,13 +208,13 @@ const ReportsScreen = () => {
                   placeholder="Buscar relatórios..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-gray-50 border-2 border-gray-200 pl-10 h-12 rounded-lg"
+                  className="bg-gray-50 border border-gray-200 pl-10 h-12 rounded-lg focus:border-gray-400"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-3">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="bg-gray-50 border-2 border-gray-200 h-11">
+                  <SelectTrigger className="bg-gray-50 border border-gray-200 h-11">
                     <div className="flex items-center gap-2">
                       <Filter className="w-4 h-4" />
                       <SelectValue placeholder="Status" />
@@ -229,7 +229,7 @@ const ReportsScreen = () => {
                 </Select>
 
                 <Select value={dateFilter} onValueChange={setDateFilter}>
-                  <SelectTrigger className="bg-gray-50 border-2 border-gray-200 h-11">
+                  <SelectTrigger className="bg-gray-50 border border-gray-200 h-11">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       <SelectValue placeholder="Período" />
@@ -247,7 +247,7 @@ const ReportsScreen = () => {
           </CardContent>
         </Card>
 
-        {/* Lista de Relatórios melhorada */}
+        {/* Lista de Relatórios com cores neutras */}
         <div className="space-y-3">
           {filteredReports.map((report) => (
             <Card key={report.id} className="border-0 shadow-lg bg-white hover:shadow-xl transition-shadow">
@@ -303,7 +303,7 @@ const ReportsScreen = () => {
                   <div className="flex gap-2 pt-2">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm" variant="outline" className="flex-1">
+                        <Button size="sm" variant="outline" className="flex-1 border-gray-300">
                           <Eye className="w-4 h-4 mr-2" />
                           Preview
                         </Button>
@@ -318,7 +318,7 @@ const ReportsScreen = () => {
                       </DialogContent>
                     </Dialog>
                     
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <Button size="sm" variant="outline" className="flex-1 border-gray-300">
                       <Download className="w-4 h-4 mr-2" />
                       PDF
                     </Button>

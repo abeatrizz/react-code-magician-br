@@ -95,7 +95,6 @@ const NewCaseScreen = () => {
   const handleAudioRecord = () => {
     if (isRecording) {
       setIsRecording(false);
-      // Simular finalização da gravação
       setAudioNote("Audio gravado com sucesso");
       toast({
         title: "Gravação finalizada",
@@ -168,29 +167,29 @@ const NewCaseScreen = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header com gradiente */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
+      {/* Header com gradiente original */}
+      <div className="bg-gradient-to-r from-gray-700 to-gray-900 text-white p-4 shadow-lg">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/cases')}
-            className="text-white hover:bg-white/20"
+            className="text-white hover:bg-white/20 w-10 h-10"
           >
             <ChevronLeft className="w-6 h-6" />
           </Button>
           <div>
             <h1 className="text-xl font-bold">Novo Caso</h1>
-            <p className="text-blue-100 text-sm">Registrar nova perícia</p>
+            <p className="text-gray-300 text-sm">Registrar nova perícia</p>
           </div>
         </div>
       </div>
 
       <div className="p-4 pb-24 space-y-6">
-        {/* Card principal com sombra e bordas arredondadas */}
-        <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50">
-          <CardHeader className="bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-lg">
-            <CardTitle className="flex items-center gap-2">
+        {/* Card principal com design mais limpo */}
+        <Card className="border-0 shadow-lg bg-white">
+          <CardHeader className="bg-gray-50 border-b">
+            <CardTitle className="flex items-center gap-2 text-gray-800">
               <Circle className="w-5 h-5" />
               Informações do Caso
             </CardTitle>
@@ -208,7 +207,7 @@ const NewCaseScreen = () => {
                     value={formData.caseNumber}
                     onChange={(e) => setFormData({...formData, caseNumber: e.target.value})}
                     placeholder="Ex: #6831121"
-                    className="bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg h-12"
+                    className="bg-white border-gray-200 focus:border-gray-400 rounded-lg h-12"
                     required
                   />
                 </div>
@@ -222,16 +221,16 @@ const NewCaseScreen = () => {
                     type="date"
                     value={formData.requestDate}
                     onChange={(e) => setFormData({...formData, requestDate: e.target.value})}
-                    className="bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg h-12"
+                    className="bg-white border-gray-200 focus:border-gray-400 rounded-lg h-12"
                     required
                   />
                 </div>
               </div>
 
-              {/* Gerenciador de Vítimas com card destacado */}
-              <Card className="bg-blue-50 border-2 border-blue-200">
+              {/* Gerenciador de Vítimas com design neutro */}
+              <Card className="bg-gray-50 border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-blue-800 text-lg">Vítimas/Pacientes</CardTitle>
+                  <CardTitle className="text-gray-800 text-lg">Vítimas/Pacientes</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <VictimManager
@@ -242,9 +241,9 @@ const NewCaseScreen = () => {
               </Card>
 
               {/* Localização */}
-              <Card className="bg-green-50 border-2 border-green-200">
+              <Card className="bg-gray-50 border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-green-800">
+                  <CardTitle className="flex items-center gap-2 text-gray-800">
                     <MapPin className="w-5 h-5" />
                     Localização
                   </CardTitle>
@@ -262,7 +261,7 @@ const NewCaseScreen = () => {
                 <div className="space-y-2">
                   <Label htmlFor="status" className="text-sm font-semibold text-gray-700">Status</Label>
                   <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
-                    <SelectTrigger className="bg-white border-2 border-gray-200 h-12 rounded-lg">
+                    <SelectTrigger className="bg-white border-gray-200 h-12 rounded-lg">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -276,7 +275,7 @@ const NewCaseScreen = () => {
                 <div className="space-y-2">
                   <Label htmlFor="priority" className="text-sm font-semibold text-gray-700">Prioridade</Label>
                   <Select value={formData.priority} onValueChange={(value) => setFormData({...formData, priority: value})}>
-                    <SelectTrigger className="bg-white border-2 border-gray-200 h-12 rounded-lg">
+                    <SelectTrigger className="bg-white border-gray-200 h-12 rounded-lg">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -299,21 +298,21 @@ const NewCaseScreen = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder="Descreva os detalhes do caso, objetivo da perícia, informações relevantes..."
-                  className="bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg min-h-[120px]"
+                  className="bg-white border-gray-200 focus:border-gray-400 rounded-lg min-h-[120px]"
                   required
                 />
                 
-                {/* Sistema de áudio */}
-                <Card className="bg-purple-50 border-2 border-purple-200 p-4">
+                {/* Sistema de áudio com cores neutras */}
+                <Card className="bg-gray-50 border border-gray-300 p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <Label className="text-purple-800 font-semibold">Nota de Áudio</Label>
+                    <Label className="text-gray-700 font-semibold">Nota de Áudio</Label>
                     <div className="flex gap-2">
                       <Button
                         type="button"
                         size="sm"
                         variant={isRecording ? "destructive" : "default"}
                         onClick={handleAudioRecord}
-                        className={isRecording ? "bg-red-500 hover:bg-red-600" : "bg-purple-600 hover:bg-purple-700"}
+                        className={isRecording ? "bg-red-500 hover:bg-red-600" : "bg-gray-600 hover:bg-gray-700"}
                       >
                         {isRecording ? (
                           <>
@@ -331,7 +330,7 @@ const NewCaseScreen = () => {
                   </div>
                   
                   {audioNote && (
-                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border">
+                    <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200">
                       <span className="text-sm text-gray-600">Nota de áudio gravada</span>
                       <div className="flex gap-2">
                         <Button
@@ -339,6 +338,7 @@ const NewCaseScreen = () => {
                           size="sm"
                           variant="outline"
                           onClick={playAudioNote}
+                          className="border-gray-300"
                         >
                           <Play className="w-3 h-3" />
                         </Button>
@@ -347,6 +347,7 @@ const NewCaseScreen = () => {
                           size="sm"
                           variant="outline"
                           onClick={removeAudioNote}
+                          className="border-gray-300"
                         >
                           ×
                         </Button>
@@ -364,9 +365,9 @@ const NewCaseScreen = () => {
               </div>
 
               {/* Evidências Dentárias */}
-              <Card className="bg-orange-50 border-2 border-orange-200">
+              <Card className="bg-gray-50 border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <CardTitle className="flex items-center gap-2 text-gray-800">
                     <Circle className="w-5 h-5" />
                     Evidências Dentárias
                   </CardTitle>
@@ -382,9 +383,9 @@ const NewCaseScreen = () => {
               </Card>
 
               {/* Evidências Gerais */}
-              <Card className="bg-yellow-50 border-2 border-yellow-200">
+              <Card className="bg-gray-50 border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-yellow-800">
+                  <CardTitle className="flex items-center gap-2 text-gray-800">
                     <Camera className="w-5 h-5" />
                     Evidências Gerais
                   </CardTitle>
@@ -402,7 +403,7 @@ const NewCaseScreen = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full h-12 border-2 border-dashed border-yellow-400 text-yellow-700 hover:bg-yellow-100 rounded-lg"
+                      className="w-full h-12 border-2 border-dashed border-gray-300 text-gray-600 hover:bg-gray-100 rounded-lg"
                       onClick={triggerFileInput}
                     >
                       <Upload className="w-5 h-5 mr-2" />
@@ -416,7 +417,7 @@ const NewCaseScreen = () => {
                             <img
                               src={image}
                               alt={`Evidência ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-lg bg-white border-2 border-gray-200 shadow-sm"
+                              className="w-full h-24 object-cover rounded-lg bg-white border border-gray-200 shadow-sm"
                             />
                             <Button
                               type="button"
@@ -441,8 +442,7 @@ const NewCaseScreen = () => {
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/cases')}
-                  className="flex-1 h-12 border-2"
-                  style={{ borderColor: '#123458', color: '#123458' }}
+                  className="flex-1 h-12 border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   Cancelar
                 </Button>
