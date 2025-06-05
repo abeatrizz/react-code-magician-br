@@ -8,45 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Filter, Edit, Trash2 } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { useCases, useDeleteCase } from '@/hooks/useApiCases';
 
 const CasesScreen = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
+  
+  const { data: cases = [], isLoading, error } = useCases();
+  const deleteCase = useDeleteCase();
 
-  const mockCases = [
-    {
-      id: '6831121',
-      title: 'Alessandro Guadapire',
-      status: 'Arquivado',
-      date: '2024-01-15',
-      perito: 'Dr. João Silva',
-      evidences: 5,
-      description: 'Descrição do caso'
-    },
-    {
-      id: '6831122', 
-      title: 'Morte em Santo Amaro',
-      status: 'Em andamento',
-      date: '2024-01-10',
-      perito: 'Dra. Maria Santos',
-      evidences: 3,
-      description: 'Descrição do caso'
-    },
-    {
-      id: '6831123',
-      title: 'Perícia Ortodôntica',
-      status: 'Concluído',
-      date: '2024-01-08',
-      perito: 'Dr. João Silva',
-      evidences: 8,
-      description: 'Descrição do caso'
-    }
-  ];
-
-  const filteredCases = mockCases.filter(case_ => {
-    const matchesSearch = case_.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         case_.id.includes(searchTerm);
+  const filteredCases = cases.filter(case_ => {
+    const matchesSearch = case_.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         case_._id.includes(searchTerm);
     const matchesStatus = statusFilter === 'todos' || case_.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -59,6 +33,36 @@ const CasesScreen = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const handleDeleteCase = async (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir este caso?')) {
+      deleteCase.mutate(id);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+        <div className="flex items-center justify-center py-8">
+          <p className="text-gray-500">Carregando casos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+        <div className="flex items-center justify-center py-8">
+          <p className="text-red-500">Erro ao carregar casos. Tente novamente.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
@@ -103,7 +107,7 @@ const CasesScreen = () => {
       <div className="space-y-3">
         {filteredCases.map((case_) => (
           <Card 
-            key={`${case_.id}-${case_.title}`}
+            key={case_._id}
             className="border-0"
             style={{ backgroundColor: '#D4C9BE' }}
           >
@@ -111,19 +115,19 @@ const CasesScreen = () => {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-800">Caso #{case_.id}</h3>
+                    <h3 className="font-semibold text-gray-800">Caso #{case_._id.slice(-6)}</h3>
                     <Badge className={getStatusColor(case_.status)}>
                       {case_.status}
                     </Badge>
                   </div>
-                  <p className="text-lg font-medium text-gray-900 mb-2">{case_.title}</p>
+                  <p className="text-lg font-medium text-gray-900 mb-2">{case_.titulo}</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <Button
                     size="icon"
                     variant="ghost"
                     className="w-8 h-8 text-gray-600 hover:text-gray-800"
-                    onClick={() => navigate(`/cases/${case_.id}`)}
+                    onClick={() => navigate(`/cases/${case_._id}`)}
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -131,6 +135,8 @@ const CasesScreen = () => {
                     size="icon"
                     variant="ghost"
                     className="w-8 h-8 text-gray-600 hover:text-red-600"
+                    onClick={() => handleDeleteCase(case_._id)}
+                    disabled={deleteCase.isPending}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -138,19 +144,17 @@ const CasesScreen = () => {
               </div>
               
               <div className="bg-white/50 rounded-lg p-3 mb-3">
-                <p className="text-sm text-gray-700">{case_.description}</p>
+                <p className="text-sm text-gray-700">{case_.descricao}</p>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <span>Perito: {case_.perito}</span>
-                  <span>Data: {case_.date}</span>
-                  <span>Evidências: {case_.evidences}</span>
+                  <span>Data: {formatDate(case_.dataAbertura)}</span>
                 </div>
                 <Button
                   variant="link"
                   className="text-blue-600 p-0 h-auto text-sm"
-                  onClick={() => navigate(`/cases/${case_.id}`)}
+                  onClick={() => navigate(`/cases/${case_._id}`)}
                 >
                   Ver detalhes
                 </Button>

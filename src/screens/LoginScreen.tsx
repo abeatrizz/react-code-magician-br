@@ -9,14 +9,14 @@ import { useAuth } from '@/hooks/useAuth';
 import Logo from '@/components/Logo';
 
 const LoginScreen = () => {
-  const [cpf, setCpf] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(cpf, password);
+    const success = await login(email, password);
     if (success) {
       navigate('/dashboard');
     }
@@ -37,13 +37,13 @@ const LoginScreen = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="cpf">CPF</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="cpf"
-                type="text"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
-                placeholder="Digite seu CPF"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Digite seu email"
                 required
                 className="bg-white"
               />

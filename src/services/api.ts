@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.odontolegal.com'; // Substituir pela URL real
+const API_BASE_URL = 'https://backend-pi-26cz.onrender.com';
 
 // Web-compatible storage fallback
 const webStorage = {
@@ -11,6 +11,20 @@ const webStorage = {
       return { value };
     } catch {
       return { value: null };
+    }
+  },
+  async set(options: { key: string; value: string }) {
+    try {
+      localStorage.setItem(options.key, options.value);
+    } catch (error) {
+      console.error('Storage error:', error);
+    }
+  },
+  async remove(options: { key: string }) {
+    try {
+      localStorage.removeItem(options.key);
+    } catch (error) {
+      console.error('Storage error:', error);
     }
   }
 };
@@ -37,12 +51,13 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Token expirado, fazer logout
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_data');
+      await webStorage.remove({ key: 'auth_token' });
+      await webStorage.remove({ key: 'user_data' });
       window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
+export { webStorage };
 export default api;
