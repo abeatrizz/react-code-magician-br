@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
+import { Toaster } from '@/components/ui/toaster';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
@@ -12,7 +13,6 @@ import CaseDetailScreen from './screens/CaseDetailScreen';
 import NewCaseScreen from './screens/NewCaseScreen';
 import EvidenceScreen from './screens/EvidenceScreen';
 import EvidenceDetailScreen from './screens/EvidenceDetailScreen';
-import ReportsScreen from './screens/ReportsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AdminUsersScreen from './screens/AdminUsersScreen';
 import BottomNavigation from './components/BottomNavigation';
@@ -25,12 +25,15 @@ function AppContent() {
 
   if (!isAuthenticated) {
     return (
-      <Routes>
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
+          <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+        <Toaster />
+      </>
     );
   }
 
@@ -43,12 +46,12 @@ function AppContent() {
         <Route path="/new-case" element={<NewCaseScreen />} />
         <Route path="/evidence/:caseId" element={<EvidenceScreen />} />
         <Route path="/evidence/:caseId/:evidenceId" element={<EvidenceDetailScreen />} />
-        <Route path="/reports" element={<ReportsScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/admin/users" element={<AdminUsersScreen />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
       <BottomNavigation />
+      <Toaster />
     </div>
   );
 }
