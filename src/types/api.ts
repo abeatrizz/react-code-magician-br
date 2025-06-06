@@ -16,24 +16,22 @@ export interface LoginResponse {
 export interface CaseRequest {
   titulo: string;
   descricao: string;
-  priority?: 'Baixa' | 'Normal' | 'Alta' | 'Urgente';
-  victims?: string[]; // IDs das vítimas
-  location?: string;
+  prioridade?: 'Baixa' | 'Média' | 'Alta' | 'Crítica';
+  vitimas?: string[]; // IDs das vítimas
 }
 
 export interface CaseResponse {
   _id: string;
   titulo: string;
   descricao: string;
-  status: string;
-  priority?: string;
+  status: 'Em andamento' | 'Finalizado' | 'Arquivado';
+  prioridade: 'Baixa' | 'Média' | 'Alta' | 'Crítica';
   dataAbertura: string;
-  location?: string;
-  victims?: VictimResponse[];
-  vitimas?: VictimResponse[]; // Portuguese version
-  evidencias?: EvidenceResponse[]; // Portuguese version for evidences
-  evidenceCount?: number;
-  reportGenerated?: boolean;
+  dataFechamento?: string;
+  usuario: string; // ID do usuário
+  evidencias: string[]; // IDs das evidências
+  relatorios: string[]; // IDs dos relatórios
+  vitimas: VictimResponse[]; // Dados completos das vítimas
 }
 
 export interface UploadResponse {
@@ -58,61 +56,80 @@ export interface UserResponse {
   _id: string;
   username: string;
   email: string;
-  role?: 'admin' | 'perito' | 'assistente';
+  role: 'admin' | 'perito' | 'usuario';
+  casos: string[]; // IDs dos casos
+  relatorios: string[]; // IDs dos relatórios
+  evidencias: string[]; // IDs das evidências
+  isActive: boolean;
 }
 
 export interface VictimRequest {
-  nic?: string;
-  name: string;
-  gender?: 'M' | 'F' | 'Outro';
-  age?: string;
-  document?: string;
-  address?: string;
-  ethnicity?: string;
-  notes?: string;
-  caseId: string;
+  nic: string;
+  nome: string;
+  genero: 'Masculino' | 'Feminino' | 'Não informado';
+  idade?: number;
+  documento?: string;
+  endereco?: string;
+  corEtnia?: 'Branca' | 'Preta' | 'Parda' | 'Amarela' | 'Indígena' | 'Não informado';
+  observacoes?: string;
+  caso: string; // ID do caso
 }
 
 export interface VictimResponse {
   _id: string;
-  nic?: string;
-  name: string;
-  gender?: string;
-  age?: string;
-  document?: string;
-  address?: string;
-  ethnicity?: string;
-  notes?: string;
-  caseId: string;
-  odontogram?: any;
-  anatomicalRegions?: any[];
+  nic: string;
+  nome: string;
+  genero: 'Masculino' | 'Feminino' | 'Não informado';
+  idade?: number;
+  documento?: string;
+  endereco?: string;
+  corEtnia?: 'Branca' | 'Preta' | 'Parda' | 'Amarela' | 'Indígena' | 'Não informado';
+  observacoes?: string;
+  caso: string; // ID do caso
+  odontograma: string[]; // IDs dos odontogramas
 }
 
 export interface EvidenceRequest {
-  casoId: string;
-  vitimaId?: string;
-  tipo: 'foto' | 'radiografia' | 'documento';
+  tipo: 'Fotografia' | 'Documento' | 'Amostra' | 'Outros';
   descricao: string;
-  file: File;
+  caso: string; // ID do caso
   geolocalizacao?: {
-    latitude: number;
-    longitude: number;
+    latitude: string;
+    longitude: string;
   };
+  imagens?: {
+    imagemUrl: string;
+    publicId: string;
+    descricao?: string;
+  }[];
+  textos?: {
+    conteudo: string;
+    tipo: 'Observação' | 'Nota técnica' | 'Descrição';
+  }[];
 }
 
 export interface EvidenceResponse {
   _id: string;
-  casoId: string;
-  vitimaId?: string;
-  tipo: string;
+  tipo: 'Fotografia' | 'Documento' | 'Amostra' | 'Outros';
   descricao: string;
-  imagemUrl: string;
+  dataColeta: string;
+  status: 'Em análise' | 'Concluído' | 'Pendente';
+  coletadaPor: string; // ID do usuário
+  caso: string; // ID do caso
   geolocalizacao?: {
-    latitude: number;
-    longitude: number;
+    latitude: string;
+    longitude: string;
   };
-  dataCaptura: string;
-  laudoGerado?: boolean;
+  imagens: {
+    imagemUrl: string;
+    publicId: string;
+    descricao?: string;
+  }[];
+  textos: {
+    conteudo: string;
+    tipo: 'Observação' | 'Nota técnica' | 'Descrição';
+  }[];
+  laudo?: string; // ID do laudo
 }
 
 export interface AIAnalysisRequest {

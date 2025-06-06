@@ -1,17 +1,17 @@
 
 export interface Victim {
   id: string;
-  nic?: string; // Número de Identificação Criminal
-  name: string;
-  gender?: 'M' | 'F' | 'Outro';
-  age?: string;
-  document?: string; // CPF, RG ou outro documento
-  address?: string;
-  ethnicity?: string; // Cor/Etnia
-  notes?: string;
-  odontogram?: OdontogramData;
+  nic: string; // Número de Identificação Criminal
+  nome: string;
+  genero: 'Masculino' | 'Feminino' | 'Não informado';
+  idade?: number;
+  documento?: string; // CPF, RG ou outro documento
+  endereco?: string;
+  corEtnia?: 'Branca' | 'Preta' | 'Parda' | 'Amarela' | 'Indígena' | 'Não informado';
+  observacoes?: string;
+  odontograma?: OdontogramData;
   anatomicalRegions?: AnatomicalRegion[];
-  caseId?: string;
+  caso: string; // ID do caso
 }
 
 export interface OdontogramData {

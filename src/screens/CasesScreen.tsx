@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -105,7 +106,7 @@ const CasesScreen = () => {
             <div className="text-center">
               <Alert variant="destructive" className="max-w-md">
                 <AlertDescription>
-                  Erro ao carregar casos. Tente novamente mais tarde.
+                  Erro ao carregar casos. Verifique sua conexão e tente novamente.
                 </AlertDescription>
               </Alert>
             </div>
@@ -156,7 +157,7 @@ const CasesScreen = () => {
                 <div>
                   <p className="text-orange-600 text-sm font-medium">Total Vítimas</p>
                   <p className="text-2xl font-bold text-orange-700">
-                    {cases.reduce((acc, case_) => acc + (case_.vitimas?.length || case_.victims?.length || 0), 0)}
+                    {cases.reduce((acc, case_) => acc + (case_.vitimas?.length || 0), 0)}
                   </p>
                 </div>
                 <Users className="h-8 w-8 text-orange-600" />
@@ -255,9 +256,9 @@ const CasesScreen = () => {
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(case_.status || 'Em andamento')}`}>
                           {case_.status || 'Em andamento'}
                         </span>
-                        {case_.priority && (
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(case_.priority)}`}>
-                            {case_.priority}
+                        {case_.prioridade && (
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(case_.prioridade)}`}>
+                            {case_.prioridade}
                           </span>
                         )}
                       </div>
@@ -270,8 +271,8 @@ const CasesScreen = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <span>📅 {formatDate(case_.dataAbertura)}</span>
-                      {(case_.vitimas || case_.victims) && (case_.vitimas?.length || case_.victims?.length || 0) > 0 && (
-                        <span>👥 {case_.vitimas?.length || case_.victims?.length || 0} vítima(s)</span>
+                      {case_.vitimas && case_.vitimas.length > 0 && (
+                        <span>👥 {case_.vitimas.length} vítima(s)</span>
                       )}
                       {case_.evidencias && case_.evidencias.length > 0 && (
                         <span>📷 {case_.evidencias.length} evidência(s)</span>

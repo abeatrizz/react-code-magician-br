@@ -25,12 +25,14 @@ export const useCreateCase = () => {
   
   return useMutation({
     mutationFn: async (caseData: CaseRequest): Promise<CaseResponse> => {
+      console.log('Creating case with data:', caseData);
       const { data } = await api.post('/casos', caseData);
+      console.log('Case created successfully:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      console.log('Case created successfully');
+      console.log('Case creation successful, cache invalidated');
     },
     onError: (error) => {
       console.error('Error creating case:', error);
@@ -43,12 +45,14 @@ export const useUpdateCase = () => {
   
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<CaseRequest> }): Promise<CaseResponse> => {
+      console.log('Updating case:', id, 'with data:', data);
       const { data: response } = await api.put(`/casos/${id}`, data);
+      console.log('Case updated successfully:', response);
       return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      console.log('Case updated successfully');
+      console.log('Case update successful, cache invalidated');
     },
     onError: (error) => {
       console.error('Error updating case:', error);
@@ -61,11 +65,13 @@ export const useDeleteCase = () => {
   
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      console.log('Deleting case:', id);
       await api.delete(`/casos/${id}`);
+      console.log('Case deleted successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      console.log('Case deleted successfully');
+      console.log('Case deletion successful, cache invalidated');
     },
     onError: (error) => {
       console.error('Error deleting case:', error);
