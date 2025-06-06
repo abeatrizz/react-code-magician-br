@@ -2,14 +2,20 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { CaseRequest, CaseResponse } from '@/types/api';
-import { toast } from '@/hooks/use-toast';
 
 export const useCases = () => {
   return useQuery({
     queryKey: ['cases'],
     queryFn: async (): Promise<CaseResponse[]> => {
-      const { data } = await api.get('/casos');
-      return data;
+      try {
+        console.log('Fetching cases...');
+        const { data } = await api.get('/casos');
+        console.log('Cases fetched successfully:', data);
+        return data;
+      } catch (error) {
+        console.error('Error fetching cases:', error);
+        throw error;
+      }
     },
   });
 };
@@ -24,18 +30,10 @@ export const useCreateCase = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      toast({
-        title: "Caso criado com sucesso!",
-        description: "O novo caso foi adicionado ao sistema.",
-      });
+      console.log('Case created successfully');
     },
     onError: (error) => {
       console.error('Error creating case:', error);
-      toast({
-        title: "Erro ao criar caso",
-        description: "Ocorreu um erro ao criar o caso. Tente novamente.",
-        variant: "destructive",
-      });
     },
   });
 };
@@ -50,18 +48,10 @@ export const useUpdateCase = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      toast({
-        title: "Caso atualizado!",
-        description: "As informações do caso foram atualizadas.",
-      });
+      console.log('Case updated successfully');
     },
     onError: (error) => {
       console.error('Error updating case:', error);
-      toast({
-        title: "Erro ao atualizar caso",
-        description: "Ocorreu um erro ao atualizar o caso.",
-        variant: "destructive",
-      });
     },
   });
 };
@@ -75,18 +65,10 @@ export const useDeleteCase = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      toast({
-        title: "Caso excluído",
-        description: "O caso foi removido do sistema.",
-      });
+      console.log('Case deleted successfully');
     },
     onError: (error) => {
       console.error('Error deleting case:', error);
-      toast({
-        title: "Erro ao excluir caso",
-        description: "Ocorreu um erro ao excluir o caso.",
-        variant: "destructive",
-      });
     },
   });
 };

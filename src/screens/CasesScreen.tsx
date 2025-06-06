@@ -2,53 +2,48 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Edit, Trash2, Camera, FileText, Eye, Plus } from 'lucide-react';
-import Logo from '@/components/Logo';
+import { Search, Plus, Calendar, Users, Camera, Trash2, Eye, Filter } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import StandardHeader from '@/components/StandardHeader';
 import { useCases, useDeleteCase } from '@/hooks/useApiCases';
 import { useAuth } from '@/hooks/useAuth';
-
-const StandardHeader = ({ title }) => {
-  return (
-    <div className="flex items-center justify-between p-4 bg-white shadow-sm border-b">
-      <Logo size="medium" variant="dark" />
-      <h1 className="text-xl font-bold text-gray-800">{title}</h1>
-      <div className="w-20"></div>
-    </div>
-  );
-};
 
 const CasesScreen = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
+  const [sortBy, setSortBy] = useState('data-desc');
   
   const { data: cases = [], isLoading, error } = useCases();
   const deleteCase = useDeleteCase();
 
-  const filteredCases = cases.filter(case_ => {
-    const matchesSearch = case_.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         case_._id?.includes(searchTerm) || false;
-    const matchesStatus = statusFilter === 'todos' || case_.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredAndSortedCases = cases
+    .filter(case_ => {
+      const matchesSearch = case_.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           case_.descricao?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'todos' || case_.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'data-asc':
+          return new Date(a.dataAbertura).getTime() - new Date(b.dataAbertura).getTime();
+        case 'data-desc':
+          return new Date(b.dataAbertura).getTime() - new Date(a.dataAbertura).getTime();
+        case 'titulo':
+          return (a.titulo || '').localeCompare(b.titulo || '');
+        default:
+          return 0;
+      }
+    });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Em andamento': return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'Finalizado': return 'bg-green-100 text-green-800 border border-green-200';
-      case 'Arquivado': return 'bg-gray-100 text-gray-800 border border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
-    }
-  };
-
-  const handleDeleteCase = async (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir este caso?')) {
       try {
-        deleteCase.mutate(id);
+        await deleteCase.mutateAsync(id);
       } catch (error) {
         console.error('Erro ao excluir caso:', error);
       }
@@ -60,12 +55,32 @@ const CasesScreen = () => {
     return new Date(dateString).toLocaleDateString('pt-BR');
   };
 
-  const canEdit = (caseStatus: string) => {
-    return user?.role === 'admin' || user?.role === 'perito' || caseStatus === 'Em andamento';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Em andamento':
+        return 'bg-blue-100 text-blue-800';
+      case 'Finalizado':
+        return 'bg-green-100 text-green-800';
+      case 'Arquivado':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const canDelete = () => {
-    return user?.role === 'admin';
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'Crítica':
+        return 'bg-red-100 text-red-800';
+      case 'Alta':
+        return 'bg-orange-100 text-orange-800';
+      case 'Média':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Baixa':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   if (isLoading) {
@@ -88,10 +103,11 @@ const CasesScreen = () => {
         <div className="p-4 pb-24">
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <p className="text-red-500 mb-2">Erro ao carregar casos</p>
-              <Button onClick={() => window.location.reload()} variant="outline">
-                Tentar novamente
-              </Button>
+              <Alert variant="destructive" className="max-w-md">
+                <AlertDescription>
+                  Erro ao carregar casos. Tente novamente mais tarde.
+                </AlertDescription>
+              </Alert>
             </div>
           </div>
         </div>
@@ -105,174 +121,190 @@ const CasesScreen = () => {
 
       <div className="p-4 pb-24 space-y-4">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-700">{cases.filter(c => c.status === 'Em andamento').length}</div>
-              <div className="text-xs text-blue-600">Em Andamento</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-600 text-sm font-medium">Em Andamento</p>
+                  <p className="text-2xl font-bold text-blue-700">
+                    {cases.filter(c => c.status === 'Em andamento').length}
+                  </p>
+                </div>
+                <Calendar className="h-8 w-8 text-blue-600" />
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-green-50 border-green-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-700">{cases.filter(c => c.status === 'Finalizado').length}</div>
-              <div className="text-xs text-green-600">Finalizados</div>
+
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-600 text-sm font-medium">Finalizados</p>
+                  <p className="text-2xl font-bold text-green-700">
+                    {cases.filter(c => c.status === 'Finalizado').length}
+                  </p>
+                </div>
+                <Calendar className="h-8 w-8 text-green-600" />
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-50 border-gray-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-gray-700">{cases.filter(c => c.status === 'Arquivado').length}</div>
-              <div className="text-xs text-gray-600">Arquivados</div>
+
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-600 text-sm font-medium">Total Vítimas</p>
+                  <p className="text-2xl font-bold text-orange-700">
+                    {cases.reduce((acc, case_) => acc + (case_.vitimas?.length || case_.victims?.length || 0), 0)}
+                  </p>
+                </div>
+                <Users className="h-8 w-8 text-orange-600" />
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-orange-50 border-orange-200">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-700">{cases.length}</div>
-              <div className="text-xs text-orange-600">Total</div>
+
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-600 text-sm font-medium">Total Evidências</p>
+                  <p className="text-2xl font-bold text-purple-700">
+                    {cases.reduce((acc, case_) => acc + (case_.evidencias?.length || 0), 0)}
+                  </p>
+                </div>
+                <Camera className="h-8 w-8 text-purple-600" />
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Search and Filter */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Buscar por título ou ID do caso..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white border-gray-300 focus:border-blue-500"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-12 bg-white flex items-center justify-center border-gray-300">
-              <Filter className="h-4 w-4" style={{ color: '#123458' }} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos os Status</SelectItem>
-              <SelectItem value="Em andamento">Em andamento</SelectItem>
-              <SelectItem value="Finalizado">Finalizado</SelectItem>
-              <SelectItem value="Arquivado">Arquivado</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Search and Filters */}
+        <Card className="bg-white shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Buscar casos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="Em andamento">Em andamento</SelectItem>
+                    <SelectItem value="Finalizado">Finalizado</SelectItem>
+                    <SelectItem value="Arquivado">Arquivado</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="data-desc">Mais recentes</SelectItem>
+                    <SelectItem value="data-asc">Mais antigos</SelectItem>
+                    <SelectItem value="titulo">Por título</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  onClick={() => navigate('/new-case')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Novo Caso
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Cases List */}
-        <div className="space-y-3">
-          {filteredCases.map((case_) => (
-            <Card 
-              key={case_._id}
-              className="border-0 shadow-md hover:shadow-lg transition-shadow duration-200"
-              style={{ backgroundColor: '#D4C9BE' }}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-gray-800">#{case_._id?.slice(-6) || 'N/A'}</h3>
-                      <Badge className={getStatusColor(case_.status || 'Em andamento')}>
-                        {case_.status || 'Em andamento'}
-                      </Badge>
-                    </div>
-                    <p className="text-lg font-medium text-gray-900 mb-2">{case_.titulo || 'Título não informado'}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="w-8 h-8 text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                      onClick={() => navigate(`/cases/${case_._id}`)}
-                      title="Ver detalhes"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    {canEdit(case_.status || 'Em andamento') && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="w-8 h-8 text-gray-600 hover:text-green-600 hover:bg-green-50"
-                        onClick={() => navigate(`/cases/${case_._id}/edit`)}
-                        title="Editar caso"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    )}
-                    {canDelete() && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="w-8 h-8 text-gray-600 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => handleDeleteCase(case_._id)}
-                        disabled={deleteCase.isPending}
-                        title="Excluir caso"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="bg-white/60 rounded-lg p-3 mb-3">
-                  <p className="text-sm text-gray-700 line-clamp-2">{case_.descricao || 'Descrição não informada'}</p>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span>📅 {formatDate(case_.dataAbertura)}</span>
-                    {(case_.vitimas || case_.victims) && (case_.vitimas?.length || case_.victims?.length || 0) > 0 && (
-                      <span>👥 {case_.vitimas?.length || case_.victims?.length || 0} vítima(s)</span>
-                    )}
-                    {case_.evidencias && case_.evidencias.length > 0 && (
-                      <span>📷 {case_.evidencias.length} evidência(s)</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-xs h-8 px-3 border-blue-300 text-blue-700 hover:bg-blue-50"
-                      onClick={() => navigate(`/evidence/${case_._id}`)}
-                    >
-                      <Camera className="w-3 h-3 mr-1" />
-                      Evidências
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-xs h-8 px-3 border-gray-300 text-gray-700 hover:bg-gray-50"
-                      onClick={() => navigate(`/cases/${case_._id}`)}
-                    >
-                      Ver detalhes
-                    </Button>
-                  </div>
+        <div className="space-y-4">
+          {filteredAndSortedCases.length === 0 ? (
+            <Card className="bg-white shadow-sm">
+              <CardContent className="p-8">
+                <div className="text-center text-gray-500">
+                  <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                  <p>Nenhum caso encontrado</p>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+          ) : (
+            filteredAndSortedCases.map((case_) => (
+              <Card key={case_._id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-lg text-gray-900">
+                          {case_.titulo || 'Título não informado'}
+                        </h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(case_.status || 'Em andamento')}`}>
+                          {case_.status || 'Em andamento'}
+                        </span>
+                        {case_.priority && (
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(case_.priority)}`}>
+                            {case_.priority}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                        {case_.descricao || 'Descrição não informada'}
+                      </p>
+                    </div>
+                  </div>
 
-        {filteredCases.length === 0 && !isLoading && (
-          <div className="text-center py-12">
-            <div className="mb-4">
-              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg mb-2">Nenhum caso encontrado</p>
-              <p className="text-gray-400 text-sm">
-                {searchTerm || statusFilter !== 'todos' 
-                  ? 'Tente ajustar os filtros de busca' 
-                  : 'Comece criando seu primeiro caso pericial'
-                }
-              </p>
-            </div>
-            {(!searchTerm && statusFilter === 'todos') && (
-              <Button 
-                onClick={() => navigate('/new-case')}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Criar Primeiro Caso
-              </Button>
-            )}
-          </div>
-        )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span>📅 {formatDate(case_.dataAbertura)}</span>
+                      {(case_.vitimas || case_.victims) && (case_.vitimas?.length || case_.victims?.length || 0) > 0 && (
+                        <span>👥 {case_.vitimas?.length || case_.victims?.length || 0} vítima(s)</span>
+                      )}
+                      {case_.evidencias && case_.evidencias.length > 0 && (
+                        <span>📷 {case_.evidencias.length} evidência(s)</span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(`/cases/${case_._id}`)}
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        Ver
+                      </Button>
+                      
+                      {(user?.role === 'admin' || user?.role === 'perito') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDelete(case_._id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
