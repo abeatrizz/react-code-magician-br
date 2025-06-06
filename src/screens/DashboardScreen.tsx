@@ -1,274 +1,256 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { Brain, TrendingUp, Users, Camera, FileText, Search } from 'lucide-react';
-import Logo from '@/components/Logo';
+import { 
+  Users, 
+  FileText, 
+  Camera, 
+  TrendingUp, 
+  Calendar,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Filter,
+  Plus
+} from 'lucide-react';
+import StandardHeader from '@/components/StandardHeader';
+import { useCases } from '@/hooks/useApiCases';
+import { useAuth } from '@/hooks/useAuth';
 
 const DashboardScreen = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const [timeFilter, setTimeFilter] = useState('mes');
-  const [analysisType, setAnalysisType] = useState('geral');
+  const { user } = useAuth();
+  const [periodFilter, setPeriodFilter] = useState('30');
+  const [statusFilter, setStatusFilter] = useState('todos');
+  
+  const { data: cases = [], isLoading } = useCases();
 
-  // Dados para o gráfico de status de casos
-  const statusData = [
-    { name: 'Em andamento', value: 60, color: '#123458' },
-    { name: 'Concluídos', value: 40, color: '#F59E0B' },
-    { name: 'Arquivados', value: 40, color: '#EF4444' }
-  ];
+  const filteredCases = cases.filter(case_ => {
+    const matchesStatus = statusFilter === 'todos' || case_.status === statusFilter;
+    const caseDate = new Date(case_.dataAbertura);
+    const periodDays = parseInt(periodFilter);
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+    const matchesPeriod = caseDate >= cutoffDate;
+    
+    return matchesStatus && matchesPeriod;
+  });
 
-  // Dados para o gráfico de total de casos por mês
-  const monthlyData = [
-    { month: 'Dezembro', cases: 120 },
-    { month: 'Janeiro', cases: 110 },
-    { month: 'Fevereiro', cases: 90 },
-    { month: 'Março', cases: 125 },
-    { month: 'Abril', cases: 111 }
-  ];
+  const getRecentCases = () => {
+    return cases
+      .sort((a, b) => new Date(b.dataAbertura).getTime() - new Date(a.dataAbertura).getTime())
+      .slice(0, 5);
+  };
 
-  // Dados de análise IA
-  const aiAnalysisData = [
-    { type: 'Padrões Dentários', matches: 45, accuracy: 92 },
-    { type: 'Reconhecimento Facial', matches: 23, accuracy: 88 },
-    { type: 'Análise Comparativa', matches: 67, accuracy: 95 }
-  ];
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Data não informada';
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
 
-  return (
-    <div className="p-4 pb-24 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header com Logo */}
-      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
-        <Logo size="large" variant="dark" />
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-sm text-gray-600">Bem-vindo</p>
-            <p className="font-semibold text-gray-800">{user?.name}</p>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
+        <StandardHeader title="Dashboard" />
+        <div className="p-4 pb-24">
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-pulse text-gray-500">Carregando dashboard...</div>
           </div>
-          <Avatar 
-            className="cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate('/profile')}
-          >
-            <AvatarImage src="" alt={user?.name} />
-            <AvatarFallback style={{ backgroundColor: '#123458', color: 'white' }}>
-              {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
         </div>
       </div>
+    );
+  }
 
-      {/* Filtros Interativos */}
-      <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <Search className="w-5 h-5" />
-            Filtros e Análises
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-40 bg-white">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="semana">Última Semana</SelectItem>
-              <SelectItem value="mes">Último Mês</SelectItem>
-              <SelectItem value="trimestre">Último Trimestre</SelectItem>
-              <SelectItem value="ano">Último Ano</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={analysisType} onValueChange={setAnalysisType}>
-            <SelectTrigger className="w-40 bg-white">
-              <SelectValue placeholder="Análise" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="geral">Visão Geral</SelectItem>
-              <SelectItem value="ia">Análise IA</SelectItem>
-              <SelectItem value="evidencias">Evidências</SelectItem>
-              <SelectItem value="correspondencias">Correspondências</SelectItem>
-            </SelectContent>
-          </Select>
-
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
+      <StandardHeader 
+        title="Dashboard" 
+        rightElement={
           <Button
-            variant="outline"
-            className="flex items-center gap-2 bg-white border-blue-300 text-blue-700 hover:bg-blue-50"
+            size="sm"
+            onClick={() => navigate('/new-case')}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            <Brain className="w-4 h-4" />
-            ML Insights
+            <Plus className="w-4 h-4 mr-1" />
+            Novo
           </Button>
-        </CardContent>
-      </Card>
+        }
+      />
 
-      {/* Stats Resumo Expandido */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <FileText className="w-6 h-6 text-blue-600 mr-2" />
-              <p className="text-2xl font-bold text-gray-800">12</p>
-            </div>
-            <p className="text-sm text-gray-600">Casos Ativos</p>
-            <div className="flex items-center justify-center mt-1">
-              <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-              <span className="text-xs text-green-600">+8%</span>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="p-4 pb-24 space-y-6">
+        {/* Filtros */}
+        <div className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Filtros:</span>
+          </div>
+          
+          <Select value={periodFilter} onValueChange={setPeriodFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">Últimos 7 dias</SelectItem>
+              <SelectItem value="30">Últimos 30 dias</SelectItem>
+              <SelectItem value="90">Últimos 90 dias</SelectItem>
+              <SelectItem value="365">Último ano</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Users className="w-6 h-6 text-purple-600 mr-2" />
-              <p className="text-2xl font-bold text-gray-800">28</p>
-            </div>
-            <p className="text-sm text-gray-600">Vítimas</p>
-            <div className="flex items-center justify-center mt-1">
-              <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-              <span className="text-xs text-green-600">+12%</span>
-            </div>
-          </CardContent>
-        </Card>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Status</SelectItem>
+              <SelectItem value="Em andamento">Em andamento</SelectItem>
+              <SelectItem value="Finalizado">Finalizado</SelectItem>
+              <SelectItem value="Arquivado">Arquivado</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Camera className="w-6 h-6 text-orange-600 mr-2" />
-              <p className="text-2xl font-bold text-gray-800">145</p>
-            </div>
-            <p className="text-sm text-gray-600">Evidências</p>
-            <div className="flex items-center justify-center mt-1">
-              <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-              <span className="text-xs text-green-600">+15%</span>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Cards de Estatísticas */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-600 text-sm font-medium">Em Andamento</p>
+                  <p className="text-2xl font-bold text-blue-700">
+                    {filteredCases.filter(c => c.status === 'Em andamento').length}
+                  </p>
+                </div>
+                <Clock className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Brain className="w-6 h-6 text-green-600 mr-2" />
-              <p className="text-2xl font-bold text-gray-800">89</p>
-            </div>
-            <p className="text-sm text-gray-600">Correspondências</p>
-            <div className="flex items-center justify-center mt-1">
-              <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-              <span className="text-xs text-green-600">+22%</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-600 text-sm font-medium">Finalizados</p>
+                  <p className="text-2xl font-bold text-green-700">
+                    {filteredCases.filter(c => c.status === 'Finalizado').length}
+                  </p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Análise IA - Machine Learning Insights */}
-      {analysisType === 'ia' && (
-        <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-gray-800 flex items-center gap-2">
-              <Brain className="w-5 h-5" />
-              Análise por Inteligência Artificial
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-600 text-sm font-medium">Total Evidências</p>
+                  <p className="text-2xl font-bold text-purple-700">
+                    {filteredCases.reduce((acc, case_) => acc + (case_.evidencias?.length || 0), 0)}
+                  </p>
+                </div>
+                <Camera className="h-8 w-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-600 text-sm font-medium">Total Vítimas</p>
+                  <p className="text-2xl font-bold text-orange-700">
+                    {filteredCases.reduce((acc, case_) => acc + (case_.vitimas?.length || 0), 0)}
+                  </p>
+                </div>
+                <Users className="h-8 w-8 text-orange-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Casos Recentes */}
+        <Card className="bg-white shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-blue-600" />
+              Casos Recentes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {aiAnalysisData.map((analysis, index) => (
-                <div key={index} className="bg-white/60 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-800">{analysis.type}</h4>
-                    <span className="text-sm font-semibold text-green-600">{analysis.accuracy}% precisão</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full" 
-                        style={{ width: `${analysis.accuracy}%` }}
-                      />
+            <div className="space-y-3">
+              {getRecentCases().map((case_) => (
+                <div 
+                  key={case_._id}
+                  className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-medium text-gray-900">#{case_._id?.slice(-6) || 'N/A'}</h4>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        case_.status === 'Em andamento' ? 'bg-blue-100 text-blue-800' :
+                        case_.status === 'Finalizado' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {case_.status || 'Em andamento'}
+                      </span>
                     </div>
-                    <span className="text-sm text-gray-600">{analysis.matches} correspondências</span>
+                    <p className="text-sm text-gray-600 mt-1">{case_.titulo || 'Título não informado'}</p>
+                    <p className="text-xs text-gray-500">
+                      📅 {formatDate(case_.dataAbertura)}
+                    </p>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/cases/${case_._id}`)}
+                    className="ml-4"
+                  >
+                    Ver
+                  </Button>
                 </div>
               ))}
+              
+              {getRecentCases().length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                  <p>Nenhum caso encontrado</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Gráfico de Status de Casos */}
-      <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-gray-800 text-center">Status de casos</CardTitle>
-          <p className="text-sm text-gray-600 text-center">
-            {timeFilter === 'mes' ? 'Último mês' : 'Período selecionado'}
-          </p>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex items-center justify-between">
-            <div className="w-32 h-32">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={statusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={30}
-                    outerRadius={60}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {statusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+        {/* Insights de ML (Preparação para futuro) */}
+        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-indigo-700">
+              <TrendingUp className="h-5 w-5" />
+              Insights de Machine Learning
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-indigo-600 mb-4">
+              Sistema de análise inteligente em desenvolvimento. Em breve, insights automáticos sobre padrões nos casos.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-3 bg-white/50 rounded-lg">
+                <div className="text-lg font-bold text-indigo-700">--</div>
+                <div className="text-sm text-indigo-600">Padrões Identificados</div>
+              </div>
+              <div className="text-center p-3 bg-white/50 rounded-lg">
+                <div className="text-lg font-bold text-indigo-700">--</div>
+                <div className="text-sm text-indigo-600">Correspondências</div>
+              </div>
+              <div className="text-center p-3 bg-white/50 rounded-lg">
+                <div className="text-lg font-bold text-indigo-700">--</div>
+                <div className="text-sm text-indigo-600">Precisão Média</div>
+              </div>
             </div>
-            <div className="flex flex-col space-y-2 flex-1 ml-4">
-              {statusData.map((item, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-sm text-gray-700">
-                    {item.value}% {item.name.toLowerCase()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Gráfico de Total de Casos */}
-      <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-gray-800 text-center">Total de casos</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData} margin={{ top: 10, right: 0, left: 0, bottom: 5 }}>
-                <XAxis 
-                  dataKey="month" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6B7280' }}
-                />
-                <YAxis hide />
-                <Bar 
-                  dataKey="cases" 
-                  fill="#123458" 
-                  radius={[4, 4, 0, 0]}
-                  label={{ position: 'top', fontSize: 12, fill: '#374151' }}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
