@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,16 @@ import { Search, Filter, Edit, Trash2, Camera, FileText, Eye, Plus } from 'lucid
 import Logo from '@/components/Logo';
 import { useCases, useDeleteCase } from '@/hooks/useApiCases';
 import { useAuth } from '@/hooks/useAuth';
+
+const StandardHeader = ({ title }) => {
+  return (
+    <div className="flex items-center justify-between p-4 bg-white shadow-sm border-b">
+      <Logo size="medium" variant="dark" />
+      <h1 className="text-xl font-bold text-gray-800">{title}</h1>
+      <div className="w-20"></div>
+    </div>
+  );
+};
 
 const CasesScreen = () => {
   const navigate = useNavigate();
@@ -62,13 +71,7 @@ const CasesScreen = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-        {/* Header Padronizado */}
-        <div className="flex items-center justify-between p-4 bg-white shadow-sm border-b">
-          <Logo size="medium" variant="dark" />
-          <h1 className="text-xl font-bold text-gray-800">Casos Periciais</h1>
-          <div className="w-20"></div>
-        </div>
-        
+        <StandardHeader title="Casos Periciais" />
         <div className="p-4 pb-24">
           <div className="flex items-center justify-center py-8">
             <div className="animate-pulse text-gray-500">Carregando casos...</div>
@@ -81,13 +84,7 @@ const CasesScreen = () => {
   if (error) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-        {/* Header Padronizado */}
-        <div className="flex items-center justify-between p-4 bg-white shadow-sm border-b">
-          <Logo size="medium" variant="dark" />
-          <h1 className="text-xl font-bold text-gray-800">Casos Periciais</h1>
-          <div className="w-20"></div>
-        </div>
-        
+        <StandardHeader title="Casos Periciais" />
         <div className="p-4 pb-24">
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
@@ -104,12 +101,7 @@ const CasesScreen = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header Padronizado */}
-      <div className="flex items-center justify-between p-4 bg-white shadow-sm border-b">
-        <Logo size="medium" variant="dark" />
-        <h1 className="text-xl font-bold text-gray-800">Casos Periciais</h1>
-        <div className="w-20"></div>
-      </div>
+      <StandardHeader title="Casos Periciais" />
 
       <div className="p-4 pb-24 space-y-4">
         {/* Stats Cards */}
@@ -226,8 +218,8 @@ const CasesScreen = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span>📅 {formatDate(case_.dataAbertura)}</span>
-                    {case_.vitimas && case_.vitimas.length > 0 && (
-                      <span>👥 {case_.vitimas.length} vítima(s)</span>
+                    {(case_.vitimas || case_.victims) && (case_.vitimas?.length || case_.victims?.length || 0) > 0 && (
+                      <span>👥 {case_.vitimas?.length || case_.victims?.length || 0} vítima(s)</span>
                     )}
                     {case_.evidencias && case_.evidencias.length > 0 && (
                       <span>📷 {case_.evidencias.length} evidência(s)</span>

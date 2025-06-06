@@ -30,6 +30,8 @@ export interface CaseResponse {
   dataAbertura: string;
   location?: string;
   victims?: VictimResponse[];
+  vitimas?: VictimResponse[]; // Portuguese version
+  evidencias?: EvidenceResponse[]; // Portuguese version for evidences
   evidenceCount?: number;
   reportGenerated?: boolean;
 }

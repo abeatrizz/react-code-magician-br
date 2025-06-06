@@ -161,7 +161,7 @@ const DashboardScreen = () => {
                 <div>
                   <p className="text-orange-600 text-sm font-medium">Total Vítimas</p>
                   <p className="text-2xl font-bold text-orange-700">
-                    {filteredCases.reduce((acc, case_) => acc + (case_.vitimas?.length || 0), 0)}
+                    {filteredCases.reduce((acc, case_) => acc + (case_.vitimas?.length || case_.victims?.length || 0), 0)}
                   </p>
                 </div>
                 <Users className="h-8 w-8 text-orange-600" />
