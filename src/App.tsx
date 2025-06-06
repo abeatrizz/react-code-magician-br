@@ -18,8 +18,6 @@ import AdminUsersScreen from './screens/AdminUsersScreen';
 import BottomNavigation from './components/BottomNavigation';
 import './App.css';
 
-const queryClient = new QueryClient();
-
 function AppContent() {
   const { isAuthenticated } = useAuth();
 
@@ -57,14 +55,24 @@ function AppContent() {
 }
 
 function App() {
+  // Criar o QueryClient dentro do componente para garantir que o React esteja disponível
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        staleTime: 5 * 60 * 1000, // 5 minutos
+      },
+    },
+  });
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
+    <Router>
+      <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <AppContent />
         </AuthProvider>
-      </Router>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </Router>
   );
 }
 
