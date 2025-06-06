@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Filter, Edit, Trash2, Users, Camera, FileText, Eye } from 'lucide-react';
+import { Search, Filter, Edit, Trash2, Camera, FileText, Eye, Plus } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { useCases, useDeleteCase } from '@/hooks/useApiCases';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,16 +37,6 @@ const CasesScreen = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'Urgente': return 'bg-red-100 text-red-800 border border-red-200';
-      case 'Alta': return 'bg-orange-100 text-orange-800 border border-orange-200';
-      case 'Normal': return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'Baixa': return 'bg-gray-100 text-gray-800 border border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
-    }
-  };
-
   const handleDeleteCase = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir este caso?')) {
       deleteCase.mutate(id);
@@ -67,7 +57,7 @@ const CasesScreen = () => {
 
   if (isLoading) {
     return (
-      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      <div className="p-4 pb-24 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
         <div className="flex items-center justify-center py-8">
           <div className="animate-pulse text-gray-500">Carregando casos...</div>
         </div>
@@ -77,7 +67,7 @@ const CasesScreen = () => {
 
   if (error) {
     return (
-      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      <div className="p-4 pb-24 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-red-500 mb-2">Erro ao carregar casos</p>
@@ -91,17 +81,11 @@ const CasesScreen = () => {
   }
 
   return (
-    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+    <div className="p-4 pb-24 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
         <Logo size="medium" variant="dark" />
-        <Button 
-          onClick={() => navigate('/new-case')}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-        >
-          <Plus className="h-5 w-5" />
-          Novo Caso
-        </Button>
+        <h1 className="text-xl font-bold text-gray-800">Casos Periciais</h1>
       </div>
 
       {/* Stats Cards */}
@@ -219,6 +203,12 @@ const CasesScreen = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                   <span>📅 {formatDate(case_.dataAbertura)}</span>
+                  {case_.victims && case_.victims.length > 0 && (
+                    <span>👥 {case_.victims.length} vítima(s)</span>
+                  )}
+                  {case_.evidenceCount && (
+                    <span>📷 {case_.evidenceCount} evidência(s)</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
