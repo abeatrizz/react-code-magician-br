@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,9 +30,9 @@ const CasosScreen = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case 'data-asc':
-          return new Date(a.criadoEm).getTime() - new Date(b.criadoEm).getTime();
+          return new Date(a.dataCriacao).getTime() - new Date(b.dataCriacao).getTime();
         case 'data-desc':
-          return new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime();
+          return new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime();
         case 'titulo':
           return (a.titulo || '').localeCompare(b.titulo || '');
         default:
@@ -58,31 +57,14 @@ const CasosScreen = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'aberto':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'em_andamento':
+      case 'Em andamento':
         return 'bg-blue-100 text-blue-800';
-      case 'finalizado':
+      case 'Finalizado':
         return 'bg-green-100 text-green-800';
-      case 'arquivado':
+      case 'Arquivado':
         return 'bg-gray-100 text-gray-800';
       default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'aberto':
-        return 'Aberto';
-      case 'em_andamento':
-        return 'Em Andamento';
-      case 'finalizado':
-        return 'Finalizado';
-      case 'arquivado':
-        return 'Arquivado';
-      default:
-        return status;
+        return 'bg-yellow-100 text-yellow-800';
     }
   };
 
@@ -134,28 +116,14 @@ const CasosScreen = () => {
 
       <div className="p-4 pb-24 space-y-4">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-600 text-sm font-medium">Abertos</p>
-                  <p className="text-2xl font-bold text-yellow-700">
-                    {casos.filter(c => c.status === 'aberto').length}
-                  </p>
-                </div>
-                <Calendar className="h-8 w-8 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Em Andamento</p>
                   <p className="text-2xl font-bold text-blue-700">
-                    {casos.filter(c => c.status === 'em_andamento').length}
+                    {casos.filter(c => c.status === 'Em andamento').length}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-blue-600" />
@@ -169,7 +137,7 @@ const CasosScreen = () => {
                 <div>
                   <p className="text-green-600 text-sm font-medium">Finalizados</p>
                   <p className="text-2xl font-bold text-green-700">
-                    {casos.filter(c => c.status === 'finalizado').length}
+                    {casos.filter(c => c.status === 'Finalizado').length}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-green-600" />
@@ -183,7 +151,7 @@ const CasosScreen = () => {
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Arquivados</p>
                   <p className="text-2xl font-bold text-gray-700">
-                    {casos.filter(c => c.status === 'arquivado').length}
+                    {casos.filter(c => c.status === 'Arquivado').length}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-gray-600" />
@@ -215,10 +183,9 @@ const CasosScreen = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="aberto">Aberto</SelectItem>
-                    <SelectItem value="em_andamento">Em Andamento</SelectItem>
-                    <SelectItem value="finalizado">Finalizado</SelectItem>
-                    <SelectItem value="arquivado">Arquivado</SelectItem>
+                    <SelectItem value="Em andamento">Em Andamento</SelectItem>
+                    <SelectItem value="Finalizado">Finalizado</SelectItem>
+                    <SelectItem value="Arquivado">Arquivado</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -258,8 +225,8 @@ const CasosScreen = () => {
                         <h3 className="font-semibold text-lg text-gray-900">
                           {caso.titulo || 'Título não informado'}
                         </h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(caso.status || 'aberto')}`}>
-                          {getStatusLabel(caso.status || 'aberto')}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(caso.status)}`}>
+                          {caso.status}
                         </span>
                       </div>
                       <p className="text-gray-600 text-sm mb-2 line-clamp-2">
@@ -270,9 +237,9 @@ const CasosScreen = () => {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>📅 Criado em: {formatDate(caso.criadoEm)}</span>
-                      {caso.atualizadoEm && (
-                        <span>✏️ Atualizado em: {formatDate(caso.atualizadoEm)}</span>
+                      <span>📅 Criado em: {formatDate(caso.dataCriacao)}</span>
+                      {caso.dataAtualizacao && (
+                        <span>✏️ Atualizado em: {formatDate(caso.dataAtualizacao)}</span>
                       )}
                     </div>
 

@@ -1,4 +1,3 @@
-
 // Tipos para Autenticação
 export interface LoginRequest {
   email: string;
@@ -17,15 +16,13 @@ export interface AuthResponse {
   usuario: UserResponse;
 }
 
-// Tipos para Usuários
-export interface UserResponse {
-  _id: string;
+// Tipos para Usuários (UserRequest para criação/edição)
+export interface UserRequest {
   nome: string;
   email: string;
+  senha?: string;
   tipoUsuario: 'admin' | 'perito' | 'assistente';
-  status: 'ativo' | 'inativo';
-  criadoEm: string;
-  atualizadoEm: string;
+  status?: 'ativo' | 'inativo';
 }
 
 // Tipos para Casos
@@ -151,6 +148,22 @@ export interface RelatorioResponse {
   conteudo: string;
   dataCriacao: string;
   geradoPor: string;
+}
+
+// Tipos para Odontologia
+export interface OdontologiaRequest {
+  vitimaId: string;
+  dadosOdontologicos: string;
+  observacoes?: string;
+}
+
+export interface OdontologiaResponse {
+  _id: string;
+  vitimaId: string;
+  dadosOdontologicos: string;
+  observacoes?: string;
+  criadoEm: string;
+  atualizadoEm: string;
 }
 
 // Tipos para Dashboard
