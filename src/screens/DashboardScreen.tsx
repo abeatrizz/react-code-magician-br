@@ -15,8 +15,12 @@ import {
   Filter,
   Plus,
   Archive,
-  AlertCircle
+  BarChart3,
+  PieChart,
+  MapPin
 } from 'lucide-react';
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, Legend } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import StandardHeader from '@/components/StandardHeader';
 import { useDashboard } from '@/hooks/useApiDashboard';
 import { useCasos } from '@/hooks/useApiCasos';
@@ -27,6 +31,7 @@ const DashboardScreen = () => {
   const { user } = useAuth();
   const [periodFilter, setPeriodFilter] = useState('30');
   const [statusFilter, setStatusFilter] = useState('todos');
+  const [chartType, setChartType] = useState('pie');
   
   const { data: dashboardData, isLoading: dashboardLoading } = useDashboard();
   const { data: casos = [], isLoading: casosLoading } = useCasos();
@@ -41,6 +46,64 @@ const DashboardScreen = () => {
     
     return matchesStatus && matchesPeriod;
   });
+
+  // Dados para gráfico de pizza/rosquinha
+  const statusData = [
+    { name: 'Em Andamento', value: filteredCasos.filter(c => c.status === 'Em andamento').length, fill: '#3b82f6' },
+    { name: 'Finalizados', value: filteredCasos.filter(c => c.status === 'Finalizado').length, fill: '#10b981' },
+    { name: 'Arquivados', value: filteredCasos.filter(c => c.status === 'Arquivado').length, fill: '#6b7280' }
+  ];
+
+  // Dados para distribuição temporal (últimos 7 dias)
+  const temporalData = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+    const dateStr = date.toISOString().split('T')[0];
+    const casosNoDia = casos.filter(caso => 
+      caso.dataCriacao && caso.dataCriacao.split('T')[0] === dateStr
+    ).length;
+    
+    return {
+      data: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      casos: casosNoDia
+    };
+  });
+
+  // Dados para comparação mensal (últimos 6 meses)
+  const monthlyData = Array.from({ length: 6 }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (5 - i));
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    
+    const casosNoMes = casos.filter(caso => {
+      if (!caso.dataCriacao) return false;
+      const casoDate = new Date(caso.dataCriacao);
+      return casoDate.getMonth() === month && casoDate.getFullYear() === year;
+    }).length;
+    
+    return {
+      mes: date.toLocaleDateString('pt-BR', { month: 'short' }),
+      casos: casosNoMes,
+      meta: 15 // Meta fictícia para comparação
+    };
+  });
+
+  // Simulação de dados de idade (já que não temos campo idade nos casos)
+  const ageData = [
+    { faixa: '0-17', casos: Math.floor(Math.random() * 20) },
+    { faixa: '18-30', casos: Math.floor(Math.random() * 30) },
+    { faixa: '31-45', casos: Math.floor(Math.random() * 25) },
+    { faixa: '46-60', casos: Math.floor(Math.random() * 20) },
+    { faixa: '60+', casos: Math.floor(Math.random() * 15) }
+  ];
+
+  // Simulação de clusters de ML
+  const clusterData = [
+    { cluster: 'Cluster A', casos: Math.floor(Math.random() * 40), caracteristica: 'Casos Urbanos' },
+    { cluster: 'Cluster B', casos: Math.floor(Math.random() * 30), caracteristica: 'Casos Rurais' },
+    { cluster: 'Cluster C', casos: Math.floor(Math.random() * 25), caracteristica: 'Casos Complexos' }
+  ];
 
   const getRecentCasos = () => {
     return casos
@@ -145,6 +208,17 @@ const DashboardScreen = () => {
               <SelectItem value="Arquivado">Arquivado</SelectItem>
             </SelectContent>
           </Select>
+
+          <Select value={chartType} onValueChange={setChartType}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pie">Gráfico Pizza</SelectItem>
+              <SelectItem value="donut">Gráfico Rosquinha</SelectItem>
+              <SelectItem value="bar">Gráfico Barras</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Cards de Estatísticas */}
@@ -206,50 +280,176 @@ const DashboardScreen = () => {
           </Card>
         </div>
 
-        {/* Cards de Recursos */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-600 text-sm font-medium">Total Vítimas</p>
-                  <p className="text-2xl font-bold text-yellow-700">
-                    {dashboardData?.totalVitimas || 0}
-                  </p>
-                </div>
-                <Users className="h-8 w-8 text-yellow-600" />
-              </div>
+        {/* Gráficos Analíticos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Frequência Relativa dos Casos */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="h-5 w-5 text-blue-600" />
+                Distribuição de Status dos Casos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{
+                emAndamento: { label: "Em Andamento", color: "#3b82f6" },
+                finalizados: { label: "Finalizados", color: "#10b981" },
+                arquivados: { label: "Arquivados", color: "#6b7280" }
+              }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <RechartsPieChart>
+                    <Pie
+                      data={statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={chartType === 'donut' ? 60 : 0}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {statusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-600 text-sm font-medium">Total Evidências</p>
-                  <p className="text-2xl font-bold text-orange-700">
-                    {dashboardData?.totalEvidencias || 0}
-                  </p>
-                </div>
-                <Camera className="h-8 w-8 text-orange-600" />
-              </div>
+          {/* Distribuição Temporal */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-green-600" />
+                Casos por Dia (Últimos 7 dias)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{
+                casos: { label: "Casos", color: "#3b82f6" }
+              }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={temporalData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="data" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line type="monotone" dataKey="casos" stroke="#3b82f6" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-indigo-600 text-sm font-medium">Total Laudos</p>
-                  <p className="text-2xl font-bold text-indigo-700">
-                    {dashboardData?.totalLaudos || 0}
-                  </p>
-                </div>
-                <FileText className="h-8 w-8 text-indigo-600" />
-              </div>
+          {/* Comparação Mensal */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-purple-600" />
+                Comparação Mensal vs Meta
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{
+                casos: { label: "Casos", color: "#8b5cf6" },
+                meta: { label: "Meta", color: "#10b981" }
+              }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={monthlyData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="mes" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="casos" fill="#8b5cf6" />
+                    <Bar dataKey="meta" fill="#10b981" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Distribuição de Idades */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-orange-600" />
+                Distribuição por Faixa Etária
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{
+                casos: { label: "Casos", color: "#f97316" }
+              }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={ageData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="faixa" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="casos" fill="#f97316" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
           </Card>
         </div>
+
+        {/* Análise de Machine Learning */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-indigo-600" />
+              Análise de Clusters (Machine Learning)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              {clusterData.map((cluster, index) => (
+                <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-gray-900">{cluster.cluster}</h4>
+                  <p className="text-2xl font-bold text-indigo-600">{cluster.casos} casos</p>
+                  <p className="text-sm text-gray-600">{cluster.caracteristica}</p>
+                </div>
+              ))}
+            </div>
+            <ChartContainer config={{
+              casos: { label: "Casos", color: "#6366f1" }
+            }}>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={clusterData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="cluster" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="casos" fill="#6366f1" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Distribuição Espacial (Mapa Simulado) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-red-600" />
+              Distribuição Espacial dos Casos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="text-center">
+                <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-600">Mapa de distribuição espacial</p>
+                <p className="text-sm text-gray-500">Integração com mapas será implementada</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Casos Recentes */}
         <Card className="bg-white shadow-md">
