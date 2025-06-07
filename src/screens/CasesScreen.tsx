@@ -5,35 +5,35 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Calendar, Users, Camera, Trash2, Eye, Filter } from 'lucide-react';
+import { Search, Plus, Calendar, Trash2, Eye, Edit } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import StandardHeader from '@/components/StandardHeader';
-import { useCases, useDeleteCase } from '@/hooks/useApiCases';
+import { useCasos, useDeleteCaso } from '@/hooks/useApiCasos';
 import { useAuth } from '@/hooks/useAuth';
 
-const CasesScreen = () => {
+const CasosScreen = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
   const [sortBy, setSortBy] = useState('data-desc');
   
-  const { data: cases = [], isLoading, error } = useCases();
-  const deleteCase = useDeleteCase();
+  const { data: casos = [], isLoading, error } = useCasos();
+  const deleteCaso = useDeleteCaso();
 
-  const filteredAndSortedCases = cases
-    .filter(case_ => {
-      const matchesSearch = case_.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           case_.descricao?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'todos' || case_.status === statusFilter;
+  const filteredAndSortedCasos = casos
+    .filter(caso => {
+      const matchesSearch = caso.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           caso.descricao?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'todos' || caso.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'data-asc':
-          return new Date(a.dataAbertura).getTime() - new Date(b.dataAbertura).getTime();
+          return new Date(a.criadoEm).getTime() - new Date(b.criadoEm).getTime();
         case 'data-desc':
-          return new Date(b.dataAbertura).getTime() - new Date(a.dataAbertura).getTime();
+          return new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime();
         case 'titulo':
           return (a.titulo || '').localeCompare(b.titulo || '');
         default:
@@ -44,7 +44,7 @@ const CasesScreen = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir este caso?')) {
       try {
-        await deleteCase.mutateAsync(id);
+        await deleteCaso.mutateAsync(id);
       } catch (error) {
         console.error('Erro ao excluir caso:', error);
       }
@@ -58,36 +58,38 @@ const CasesScreen = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Em andamento':
+      case 'aberto':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'em_andamento':
         return 'bg-blue-100 text-blue-800';
-      case 'Finalizado':
+      case 'finalizado':
         return 'bg-green-100 text-green-800';
-      case 'Arquivado':
+      case 'arquivado':
         return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'Crítica':
-        return 'bg-red-100 text-red-800';
-      case 'Alta':
-        return 'bg-orange-100 text-orange-800';
-      case 'Média':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Baixa':
-        return 'bg-green-100 text-green-800';
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'aberto':
+        return 'Aberto';
+      case 'em_andamento':
+        return 'Em Andamento';
+      case 'finalizado':
+        return 'Finalizado';
+      case 'arquivado':
+        return 'Arquivado';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return status;
     }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-        <StandardHeader title="Casos Periciais" />
+        <StandardHeader title="Casos" />
         <div className="p-4 pb-24">
           <div className="flex items-center justify-center py-8">
             <div className="animate-pulse text-gray-500">Carregando casos...</div>
@@ -100,16 +102,14 @@ const CasesScreen = () => {
   if (error) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-        <StandardHeader title="Casos Periciais" />
+        <StandardHeader title="Casos" />
         <div className="p-4 pb-24">
           <div className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <Alert variant="destructive" className="max-w-md">
-                <AlertDescription>
-                  Erro ao carregar casos. Verifique sua conexão e tente novamente.
-                </AlertDescription>
-              </Alert>
-            </div>
+            <Alert variant="destructive" className="max-w-md">
+              <AlertDescription>
+                Erro ao carregar casos. Verifique sua conexão e tente novamente.
+              </AlertDescription>
+            </Alert>
           </div>
         </div>
       </div>
@@ -118,18 +118,44 @@ const CasesScreen = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      <StandardHeader title="Casos Periciais" />
+      <StandardHeader 
+        title="Casos" 
+        rightElement={
+          <Button
+            size="sm"
+            onClick={() => navigate('/new-case')}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Novo
+          </Button>
+        }
+      />
 
       <div className="p-4 pb-24 space-y-4">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-yellow-600 text-sm font-medium">Abertos</p>
+                  <p className="text-2xl font-bold text-yellow-700">
+                    {casos.filter(c => c.status === 'aberto').length}
+                  </p>
+                </div>
+                <Calendar className="h-8 w-8 text-yellow-600" />
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Em Andamento</p>
                   <p className="text-2xl font-bold text-blue-700">
-                    {cases.filter(c => c.status === 'Em andamento').length}
+                    {casos.filter(c => c.status === 'em_andamento').length}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-blue-600" />
@@ -143,7 +169,7 @@ const CasesScreen = () => {
                 <div>
                   <p className="text-green-600 text-sm font-medium">Finalizados</p>
                   <p className="text-2xl font-bold text-green-700">
-                    {cases.filter(c => c.status === 'Finalizado').length}
+                    {casos.filter(c => c.status === 'finalizado').length}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-green-600" />
@@ -151,30 +177,16 @@ const CasesScreen = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-600 text-sm font-medium">Total Vítimas</p>
-                  <p className="text-2xl font-bold text-orange-700">
-                    {cases.reduce((acc, case_) => acc + (case_.vitimas?.length || 0), 0)}
+                  <p className="text-gray-600 text-sm font-medium">Arquivados</p>
+                  <p className="text-2xl font-bold text-gray-700">
+                    {casos.filter(c => c.status === 'arquivado').length}
                   </p>
                 </div>
-                <Users className="h-8 w-8 text-orange-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-600 text-sm font-medium">Total Evidências</p>
-                  <p className="text-2xl font-bold text-purple-700">
-                    {cases.reduce((acc, case_) => acc + (case_.evidencias?.length || 0), 0)}
-                  </p>
-                </div>
-                <Camera className="h-8 w-8 text-purple-600" />
+                <Calendar className="h-8 w-8 text-gray-600" />
               </div>
             </CardContent>
           </Card>
@@ -203,9 +215,10 @@ const CasesScreen = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="Em andamento">Em andamento</SelectItem>
-                    <SelectItem value="Finalizado">Finalizado</SelectItem>
-                    <SelectItem value="Arquivado">Arquivado</SelectItem>
+                    <SelectItem value="aberto">Aberto</SelectItem>
+                    <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                    <SelectItem value="finalizado">Finalizado</SelectItem>
+                    <SelectItem value="arquivado">Arquivado</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -219,14 +232,6 @@ const CasesScreen = () => {
                     <SelectItem value="titulo">Por título</SelectItem>
                   </SelectContent>
                 </Select>
-
-                <Button
-                  onClick={() => navigate('/new-case')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Novo Caso
-                </Button>
               </div>
             </div>
           </CardContent>
@@ -234,7 +239,7 @@ const CasesScreen = () => {
 
         {/* Cases List */}
         <div className="space-y-4">
-          {filteredAndSortedCases.length === 0 ? (
+          {filteredAndSortedCasos.length === 0 ? (
             <Card className="bg-white shadow-sm">
               <CardContent className="p-8">
                 <div className="text-center text-gray-500">
@@ -244,38 +249,30 @@ const CasesScreen = () => {
               </CardContent>
             </Card>
           ) : (
-            filteredAndSortedCases.map((case_) => (
-              <Card key={case_._id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
+            filteredAndSortedCasos.map((caso) => (
+              <Card key={caso._id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold text-lg text-gray-900">
-                          {case_.titulo || 'Título não informado'}
+                          {caso.titulo || 'Título não informado'}
                         </h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(case_.status || 'Em andamento')}`}>
-                          {case_.status || 'Em andamento'}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(caso.status || 'aberto')}`}>
+                          {getStatusLabel(caso.status || 'aberto')}
                         </span>
-                        {case_.prioridade && (
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(case_.prioridade)}`}>
-                            {case_.prioridade}
-                          </span>
-                        )}
                       </div>
                       <p className="text-gray-600 text-sm mb-2 line-clamp-2">
-                        {case_.descricao || 'Descrição não informada'}
+                        {caso.descricao || 'Descrição não informada'}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>📅 {formatDate(case_.dataAbertura)}</span>
-                      {case_.vitimas && case_.vitimas.length > 0 && (
-                        <span>👥 {case_.vitimas.length} vítima(s)</span>
-                      )}
-                      {case_.evidencias && case_.evidencias.length > 0 && (
-                        <span>📷 {case_.evidencias.length} evidência(s)</span>
+                      <span>📅 Criado em: {formatDate(caso.criadoEm)}</span>
+                      {caso.atualizadoEm && (
+                        <span>✏️ Atualizado em: {formatDate(caso.atualizadoEm)}</span>
                       )}
                     </div>
 
@@ -283,21 +280,32 @@ const CasesScreen = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => navigate(`/cases/${case_._id}`)}
+                        onClick={() => navigate(`/cases/${caso._id}`)}
                       >
                         <Eye className="w-4 h-4 mr-1" />
                         Ver
                       </Button>
                       
-                      {(user?.role === 'admin' || user?.role === 'perito') && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleDelete(case_._id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                      {(user?.tipoUsuario === 'admin' || user?.tipoUsuario === 'perito') && (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigate(`/cases/${caso._id}/edit`)}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Editar
+                          </Button>
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDelete(caso._id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -311,4 +319,4 @@ const CasesScreen = () => {
   );
 };
 
-export default CasesScreen;
+export default CasosScreen;

@@ -1,14 +1,14 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
-import { ReportRequest, ReportResponse } from '@/types/api';
+import { LaudoRequest, LaudoResponse } from '@/types/api';
 import { toast } from '@/hooks/use-toast';
 
 export const useReports = () => {
   return useQuery({
-    queryKey: ['reports'],
-    queryFn: async (): Promise<ReportResponse[]> => {
-      const { data } = await api.get('/relatorios');
+    queryKey: ['laudos'],
+    queryFn: async (): Promise<LaudoResponse[]> => {
+      const { data } = await api.get('/laudos');
       return data;
     },
   });
@@ -18,22 +18,22 @@ export const useCreateReport = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (reportData: ReportRequest): Promise<ReportResponse> => {
-      const { data } = await api.post('/relatorios', reportData);
+    mutationFn: async (reportData: LaudoRequest): Promise<LaudoResponse> => {
+      const { data } = await api.post('/laudos', reportData);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['laudos'] });
       toast({
-        title: "Relatório gerado!",
-        description: "O relatório foi criado com sucesso.",
+        title: "Laudo gerado!",
+        description: "O laudo foi criado com sucesso.",
       });
     },
     onError: (error) => {
       console.error('Error creating report:', error);
       toast({
-        title: "Erro ao gerar relatório",
-        description: "Ocorreu um erro ao gerar o relatório.",
+        title: "Erro ao gerar laudo",
+        description: "Ocorreu um erro ao gerar o laudo.",
         variant: "destructive",
       });
     },

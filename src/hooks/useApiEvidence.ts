@@ -1,12 +1,12 @@
 
 import { useMutation } from '@tanstack/react-query';
 import api from '@/services/api';
-import { UploadResponse } from '@/types/api';
+import { EvidenceResponse } from '@/types/api';
 import { toast } from '@/hooks/use-toast';
 
 export const useUploadEvidence = () => {
   return useMutation({
-    mutationFn: async (file: File): Promise<UploadResponse> => {
+    mutationFn: async (file: File): Promise<EvidenceResponse> => {
       const formData = new FormData();
       formData.append('file', file);
       

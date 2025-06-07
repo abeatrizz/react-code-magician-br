@@ -16,10 +16,9 @@ const ProfileScreen = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: user?.nome || '',
     email: user?.email || '',
-    cpf: user?.cpf || '',
-    profileImage: user?.profileImage || ''
+    profileImage: ''
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -62,6 +61,19 @@ const ProfileScreen = () => {
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  const getTipoUsuarioLabel = (tipo: string) => {
+    switch (tipo) {
+      case 'admin':
+        return 'Administrador';
+      case 'perito':
+        return 'Perito';
+      case 'assistente':
+        return 'Assistente';
+      default:
+        return tipo;
+    }
   };
 
   return (
@@ -142,21 +154,21 @@ const ProfileScreen = () => {
             />
           </div>
           <div>
-            <Label htmlFor="cpf">CPF</Label>
+            <Label htmlFor="role">Função</Label>
             <Input
-              id="cpf"
+              id="role"
               type="text"
-              value={formData.cpf}
+              value={getTipoUsuarioLabel(user?.tipoUsuario || '')}
               disabled={true}
               className="bg-gray-100"
             />
           </div>
           <div>
-            <Label htmlFor="role">Função</Label>
+            <Label htmlFor="status">Status</Label>
             <Input
-              id="role"
+              id="status"
               type="text"
-              value={user?.role === 'admin' ? 'Administrador' : user?.role === 'perito' ? 'Perito' : 'Assistente'}
+              value={user?.status === 'ativo' ? 'Ativo' : 'Inativo'}
               disabled={true}
               className="bg-gray-100"
             />
@@ -259,7 +271,7 @@ const ProfileScreen = () => {
       </Card>
 
       {/* Gerenciamento de Usuários (apenas para admin) */}
-      {user?.role === 'admin' && (
+      {user?.tipoUsuario === 'admin' && (
         <Card style={{ backgroundColor: '#D4C9BE' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
