@@ -10,14 +10,16 @@ import Logo from '@/components/Logo';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [senha, setSenha] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(email, password);
+    console.log('Login form submitted with:', { email });
+    const success = await login(email, senha);
     if (success) {
+      console.log('Login successful, redirecting to dashboard');
       navigate('/dashboard');
     }
   };
@@ -33,6 +35,9 @@ const LoginScreen = () => {
           <div className="flex justify-center mb-4">
             <Logo size="large" variant="dark" />
           </div>
+          <CardTitle className="text-xl font-bold" style={{ color: '#123458' }}>
+            Sistema Odonto-Legal
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -49,12 +54,12 @@ const LoginScreen = () => {
               />
             </div>
             <div>
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="senha">Senha</Label>
               <Input
-                id="password"
+                id="senha"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 placeholder="Digite sua senha"
                 required
                 className="bg-white"

@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'https://backend-pi-26cz.onrender.com';
+const API_BASE_URL = 'https://backend-pi-26cz.onrender.com/api';
 
 // Web-compatible storage fallback
 const webStorage = {
@@ -42,13 +42,18 @@ api.interceptors.request.use(async (config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log('API Request:', config.method?.toUpperCase(), config.url, config.headers);
   return config;
 });
 
 // Interceptor para tratar respostas de erro
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('API Response:', response.status, response.config.url);
+    return response;
+  },
   async (error) => {
+    console.error('API Error:', error.response?.status, error.response?.data);
     if (error.response?.status === 401) {
       // Token expirado, fazer logout
       await webStorage.remove({ key: 'auth_token' });

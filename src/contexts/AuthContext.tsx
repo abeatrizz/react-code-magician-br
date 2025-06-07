@@ -2,21 +2,12 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import api, { webStorage } from '@/services/api';
-import { LoginRequest, LoginResponse } from '@/types/api';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  cpf?: string;
-  role: 'admin' | 'perito' | 'assistente';
-  profileImage?: string;
-}
+import { LoginRequest, LoginResponse, UserResponse } from '@/types/api';
 
 interface AuthContextType {
-  user: User | null;
+  user: UserResponse | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, senha: string) => Promise<boolean>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -24,7 +15,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (token && userData) {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
+        console.log('Auth status checked - user found:', parsedUser);
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -47,27 +39,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, senha: string): Promise<boolean> => {
     try {
       setLoading(true);
+      console.log('Attempting login with:', { email });
       
-      const loginData: LoginRequest = { email, password };
+      const loginData: LoginRequest = { email, senha };
       const { data }: { data: LoginResponse } = await api.post('/auth/login', loginData);
       
-      const mappedUser: User = {
-        id: data.user.id,
-        name: data.user.username,
-        email: data.user.email,
-        role: 'perito', // Default role, você pode ajustar conforme necessário
-      };
+      console.log('Login successful:', data);
       
       await webStorage.set({ key: 'auth_token', value: data.token });
-      await webStorage.set({ key: 'user_data', value: JSON.stringify(mappedUser) });
+      await webStorage.set({ key: 'user_data', value: JSON.stringify(data.user) });
       
-      setUser(mappedUser);
+      setUser(data.user);
       toast({
         title: "Login realizado com sucesso!",
-        description: `Bem-vindo, ${mappedUser.name}`,
+        description: `Bem-vindo, ${data.user.nome}`,
       });
       
       return true;
@@ -91,6 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await webStorage.remove({ key: 'auth_token' });
       await webStorage.remove({ key: 'user_data' });
       setUser(null);
+      console.log('Logout successful');
       toast({
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso",
