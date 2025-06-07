@@ -18,9 +18,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import StandardHeader from '@/components/StandardHeader';
+import { useDashboard } from '@/hooks/useApiDashboard';
 import { useCasos } from '@/hooks/useApiCasos';
-import { useEvidencias } from '@/hooks/useApiEvidencias';
-import { useLaudos } from '@/hooks/useApiLaudos';
 import { useAuth } from '@/hooks/useAuth';
 
 const DashboardScreen = () => {
@@ -29,13 +28,12 @@ const DashboardScreen = () => {
   const [periodFilter, setPeriodFilter] = useState('30');
   const [statusFilter, setStatusFilter] = useState('todos');
   
+  const { data: dashboardData, isLoading: dashboardLoading } = useDashboard();
   const { data: casos = [], isLoading: casosLoading } = useCasos();
-  const { data: evidencias = [], isLoading: evidenciasLoading } = useEvidencias();
-  const { data: laudos = [], isLoading: laudosLoading } = useLaudos();
 
   const filteredCasos = casos.filter(caso => {
     const matchesStatus = statusFilter === 'todos' || caso.status === statusFilter;
-    const caseDate = new Date(caso.criadoEm);
+    const caseDate = new Date(caso.dataCriacao);
     const periodDays = parseInt(periodFilter);
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - periodDays);
@@ -46,7 +44,7 @@ const DashboardScreen = () => {
 
   const getRecentCasos = () => {
     return casos
-      .sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime())
+      .sort((a, b) => new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime())
       .slice(0, 5);
   };
 
@@ -57,20 +55,18 @@ const DashboardScreen = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'aberto':
-        return 'Aberto';
-      case 'em_andamento':
+      case 'Em andamento':
         return 'Em Andamento';
-      case 'finalizado':
+      case 'Finalizado':
         return 'Finalizado';
-      case 'arquivado':
+      case 'Arquivado':
         return 'Arquivado';
       default:
         return status;
     }
   };
 
-  if (casosLoading || evidenciasLoading || laudosLoading) {
+  if (dashboardLoading || casosLoading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
         <StandardHeader title="Dashboard" />
@@ -144,37 +140,22 @@ const DashboardScreen = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos os Status</SelectItem>
-              <SelectItem value="aberto">Aberto</SelectItem>
-              <SelectItem value="em_andamento">Em Andamento</SelectItem>
-              <SelectItem value="finalizado">Finalizado</SelectItem>
-              <SelectItem value="arquivado">Arquivado</SelectItem>
+              <SelectItem value="Em andamento">Em Andamento</SelectItem>
+              <SelectItem value="Finalizado">Finalizado</SelectItem>
+              <SelectItem value="Arquivado">Arquivado</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Cards de Estatísticas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-600 text-sm font-medium">Abertos</p>
-                  <p className="text-2xl font-bold text-yellow-700">
-                    {filteredCasos.filter(c => c.status === 'aberto').length}
-                  </p>
-                </div>
-                <AlertCircle className="h-8 w-8 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Em Andamento</p>
                   <p className="text-2xl font-bold text-blue-700">
-                    {filteredCasos.filter(c => c.status === 'em_andamento').length}
+                    {dashboardData?.casosEmAndamento || filteredCasos.filter(c => c.status === 'Em andamento').length}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-blue-600" />
@@ -188,7 +169,7 @@ const DashboardScreen = () => {
                 <div>
                   <p className="text-green-600 text-sm font-medium">Finalizados</p>
                   <p className="text-2xl font-bold text-green-700">
-                    {filteredCasos.filter(c => c.status === 'finalizado').length}
+                    {dashboardData?.casosFinalizados || filteredCasos.filter(c => c.status === 'Finalizado').length}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -202,10 +183,24 @@ const DashboardScreen = () => {
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Arquivados</p>
                   <p className="text-2xl font-bold text-gray-700">
-                    {filteredCasos.filter(c => c.status === 'arquivado').length}
+                    {dashboardData?.casosArquivados || filteredCasos.filter(c => c.status === 'Arquivado').length}
                   </p>
                 </div>
                 <Archive className="h-8 w-8 text-gray-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-600 text-sm font-medium">Total</p>
+                  <p className="text-2xl font-bold text-purple-700">
+                    {dashboardData?.totalCasos || casos.length}
+                  </p>
+                </div>
+                <Calendar className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -213,16 +208,16 @@ const DashboardScreen = () => {
 
         {/* Cards de Recursos */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-600 text-sm font-medium">Total Evidências</p>
-                  <p className="text-2xl font-bold text-purple-700">
-                    {evidencias.length}
+                  <p className="text-yellow-600 text-sm font-medium">Total Vítimas</p>
+                  <p className="text-2xl font-bold text-yellow-700">
+                    {dashboardData?.totalVitimas || 0}
                   </p>
                 </div>
-                <Camera className="h-8 w-8 text-purple-600" />
+                <Users className="h-8 w-8 text-yellow-600" />
               </div>
             </CardContent>
           </Card>
@@ -231,12 +226,12 @@ const DashboardScreen = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-600 text-sm font-medium">Total Laudos</p>
+                  <p className="text-orange-600 text-sm font-medium">Total Evidências</p>
                   <p className="text-2xl font-bold text-orange-700">
-                    {laudos.length}
+                    {dashboardData?.totalEvidencias || 0}
                   </p>
                 </div>
-                <FileText className="h-8 w-8 text-orange-600" />
+                <Camera className="h-8 w-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
@@ -245,12 +240,12 @@ const DashboardScreen = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-indigo-600 text-sm font-medium">Total Casos</p>
+                  <p className="text-indigo-600 text-sm font-medium">Total Laudos</p>
                   <p className="text-2xl font-bold text-indigo-700">
-                    {casos.length}
+                    {dashboardData?.totalLaudos || 0}
                   </p>
                 </div>
-                <Calendar className="h-8 w-8 text-indigo-600" />
+                <FileText className="h-8 w-8 text-indigo-600" />
               </div>
             </CardContent>
           </Card>
@@ -275,17 +270,16 @@ const DashboardScreen = () => {
                     <div className="flex items-center gap-2">
                       <h4 className="font-medium text-gray-900">#{caso._id?.slice(-6) || 'N/A'}</h4>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        caso.status === 'aberto' ? 'bg-yellow-100 text-yellow-800' :
-                        caso.status === 'em_andamento' ? 'bg-blue-100 text-blue-800' :
-                        caso.status === 'finalizado' ? 'bg-green-100 text-green-800' :
+                        caso.status === 'Em andamento' ? 'bg-blue-100 text-blue-800' :
+                        caso.status === 'Finalizado' ? 'bg-green-100 text-green-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {getStatusLabel(caso.status || 'aberto')}
+                        {getStatusLabel(caso.status || 'Em andamento')}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">{caso.titulo || 'Título não informado'}</p>
                     <p className="text-xs text-gray-500">
-                      📅 {formatDate(caso.criadoEm)}
+                      📅 {formatDate(caso.dataCriacao)}
                     </p>
                   </div>
                   <Button
@@ -318,7 +312,7 @@ const DashboardScreen = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Button
                 onClick={() => navigate('/new-case')}
                 className="bg-blue-600 hover:bg-blue-700 text-white h-16"
@@ -335,12 +329,20 @@ const DashboardScreen = () => {
                 Ver Todos os Casos
               </Button>
               <Button
-                onClick={() => navigate('/evidencias')}
+                onClick={() => navigate('/laudos')}
                 variant="outline"
                 className="h-16"
               >
-                <Camera className="w-5 h-5 mr-2" />
-                Gerenciar Evidências
+                <FileText className="w-5 h-5 mr-2" />
+                Laudos
+              </Button>
+              <Button
+                onClick={() => navigate('/relatorios')}
+                variant="outline"
+                className="h-16"
+              >
+                <TrendingUp className="w-5 h-5 mr-2" />
+                Relatórios
               </Button>
             </div>
           </CardContent>

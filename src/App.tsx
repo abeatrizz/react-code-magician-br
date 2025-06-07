@@ -50,8 +50,11 @@ function AppContent() {
         <Route path="/cases" element={<CasosScreen />} />
         <Route path="/cases/:id" element={<CaseDetailScreen />} />
         <Route path="/new-case" element={<NewCaseScreen />} />
+        <Route path="/cases/:caseId/vitimas" element={<VitimasScreen />} />
         <Route path="/evidence/:caseId" element={<EvidenceScreen />} />
         <Route path="/evidence/:caseId/:evidenceId" element={<EvidenceDetailScreen />} />
+        <Route path="/laudos" element={<LaudosScreen />} />
+        <Route path="/relatorios" element={<RelatoriosScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/admin/users" element={<AdminUsersScreen />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />

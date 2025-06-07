@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import api, { webStorage } from '@/services/api';
-import { LoginRequest, LoginResponse, UserResponse } from '@/types/api';
+import { LoginRequest, AuthResponse, UserResponse } from '@/types/api';
 
 interface AuthContextType {
   user: UserResponse | null;
@@ -45,17 +45,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Attempting login with:', { email });
       
       const loginData: LoginRequest = { email, senha };
-      const { data }: { data: LoginResponse } = await api.post('/auth/login', loginData);
+      const { data }: { data: AuthResponse } = await api.post('/auth/login', loginData);
       
       console.log('Login successful:', data);
       
       await webStorage.set({ key: 'auth_token', value: data.token });
-      await webStorage.set({ key: 'user_data', value: JSON.stringify(data.user) });
+      await webStorage.set({ key: 'user_data', value: JSON.stringify(data.usuario) });
       
-      setUser(data.user);
+      setUser(data.usuario);
       toast({
         title: "Login realizado com sucesso!",
-        description: `Bem-vindo, ${data.user.nome}`,
+        description: `Bem-vindo, ${data.usuario.nome}`,
       });
       
       return true;
