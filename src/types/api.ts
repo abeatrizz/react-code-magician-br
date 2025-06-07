@@ -1,3 +1,4 @@
+
 // Tipos para Autenticação
 export interface LoginRequest {
   email: string;
@@ -9,6 +10,16 @@ export interface RegisterRequest {
   email: string;
   senha: string;
   tipoUsuario: 'admin' | 'perito' | 'assistente';
+}
+
+export interface UserResponse {
+  _id: string;
+  nome: string;
+  email: string;
+  tipoUsuario: 'admin' | 'perito' | 'assistente';
+  status: 'ativo' | 'inativo';
+  criadoEm: string;
+  atualizadoEm: string;
 }
 
 export interface AuthResponse {
