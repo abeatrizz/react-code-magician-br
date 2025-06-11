@@ -11,7 +11,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, User, Edit, Trash2, Search } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { VictimaRequest } from '@/types/api';
-import { useVitimas, useCreateVitima, useUpdateVitima, useDeleteVitima } from '@/hooks/useApiVitimas';
+import { useVitimas, useCreateVitima, useUpdateVitima, useDeleteVitima } from '@/hooks/useLocalData';
 import StandardHeader from '@/components/StandardHeader';
 
 const VitimasScreen = () => {

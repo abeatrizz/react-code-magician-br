@@ -10,8 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, BarChart3, Download, Calendar, FileText } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { RelatorioRequest } from '@/types/api';
-import { useRelatorios, useCreateRelatorio } from '@/hooks/useApiRelatorios';
-import { useCasos } from '@/hooks/useApiCasos';
+import { useRelatorios, useCreateRelatorio, useCasos } from '@/hooks/useLocalData';
 import StandardHeader from '@/components/StandardHeader';
 import { useAuth } from '@/hooks/useAuth';
 
