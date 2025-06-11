@@ -14,9 +14,9 @@ import VitimasScreen from './screens/VitimasScreen';
 import EvidenceScreen from './screens/EvidenceScreen';
 import EvidenceDetailScreen from './screens/EvidenceDetailScreen';
 import LaudosScreen from './screens/LaudosScreen';
-import RelatoriosScreen from './screens/RelatoriosScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AdminUsersScreen from './screens/AdminUsersScreen';
+import ReportsScreen from './screens/ReportsScreen';
 import BottomNavigation from './components/BottomNavigation';
 import './App.css';
 
@@ -56,7 +56,7 @@ function AppContent() {
         <Route path="/evidence/:caseId" element={<EvidenceScreen />} />
         <Route path="/evidence/:caseId/:evidenceId" element={<EvidenceDetailScreen />} />
         <Route path="/laudos" element={<LaudosScreen />} />
-        <Route path="/relatorios" element={<RelatoriosScreen />} />
+        <Route path="/reports" element={<ReportsScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/admin/users" element={<AdminUsersScreen />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />

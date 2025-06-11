@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Folder, FileText, User, BarChart3 } from 'lucide-react';
+import { Home, FolderOpen, FileText, User } from 'lucide-react';
 
 const BottomNavigation = () => {
   const navigate = useNavigate();
@@ -9,17 +9,15 @@ const BottomNavigation = () => {
 
   const navItems = [
     { icon: Home, label: 'Início', path: '/dashboard' },
-    { icon: Folder, label: 'Casos', path: '/cases' },
+    { icon: FolderOpen, label: 'Casos', path: '/cases' },
     { icon: FileText, label: 'Laudos', path: '/laudos' },
-    { icon: BarChart3, label: 'Relatórios', path: '/relatorios' },
     { icon: User, label: 'Perfil', path: '/profile' },
   ];
 
   const isActive = (path: string) => {
     return location.pathname === path || 
            (path === '/cases' && location.pathname.startsWith('/cases')) ||
-           (path === '/laudos' && location.pathname.startsWith('/laudos')) ||
-           (path === '/relatorios' && location.pathname.startsWith('/relatorios'));
+           (path === '/laudos' && location.pathname.startsWith('/laudos'));
   };
 
   return (

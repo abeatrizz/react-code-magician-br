@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,11 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Camera, Upload, Circle, Mic, MicOff, Play, Square } from 'lucide-react';
+import { ArrowLeft, MapPin, Camera, Upload, User, Mic, Play, Square } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import DentalChart from '@/components/DentalChart';
 import VictimManager from '@/components/VictimManager';
 import LocationMap from '@/components/LocationMap';
+import Logo from '@/components/Logo';
 
 interface ToothEvidence {
   toothNumber: number;
@@ -166,31 +168,28 @@ const NewCaseScreen = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header com gradiente original */}
-      <div className="bg-gradient-to-r from-gray-700 to-gray-900 text-white p-4 shadow-lg">
+    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/cases')}
-            className="text-white hover:bg-white/20 w-10 h-10"
+            className="text-gray-600 hover:text-gray-800"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-xl font-bold">Novo Caso</h1>
-            <p className="text-gray-300 text-sm">Registrar nova perícia</p>
-          </div>
+          <Logo size="medium" variant="dark" />
         </div>
       </div>
 
-      <div className="p-4 pb-24 space-y-6">
-        {/* Card principal com design mais limpo */}
-        <Card className="border-0 shadow-lg bg-white">
-          <CardHeader className="bg-gray-50 border-b">
-            <CardTitle className="flex items-center gap-2 text-gray-800">
-              <Circle className="w-5 h-5" />
+      <div className="space-y-6">
+        {/* Card principal */}
+        <Card style={{ backgroundColor: '#D4C9BE' }}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
+              <User className="w-5 h-5" />
               Informações do Caso
             </CardTitle>
           </CardHeader>
@@ -199,7 +198,7 @@ const NewCaseScreen = () => {
               {/* Grid responsivo para campos principais */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="caseNumber" className="text-sm font-semibold text-gray-700">
+                  <Label htmlFor="caseNumber" className="text-sm font-semibold" style={{ color: '#123458' }}>
                     Número do Caso
                   </Label>
                   <Input
@@ -213,7 +212,7 @@ const NewCaseScreen = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="requestDate" className="text-sm font-semibold text-gray-700">
+                  <Label htmlFor="requestDate" className="text-sm font-semibold" style={{ color: '#123458' }}>
                     Data de Solicitação
                   </Label>
                   <Input
@@ -227,10 +226,10 @@ const NewCaseScreen = () => {
                 </div>
               </div>
 
-              {/* Gerenciador de Vítimas com design neutro */}
-              <Card className="bg-gray-50 border border-gray-200">
+              {/* Gerenciador de Vítimas */}
+              <Card className="bg-white border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-gray-800 text-lg">Vítimas/Pacientes</CardTitle>
+                  <CardTitle style={{ color: '#123458' }} className="text-lg">Vítimas/Pacientes</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <VictimManager
@@ -241,9 +240,9 @@ const NewCaseScreen = () => {
               </Card>
 
               {/* Localização */}
-              <Card className="bg-gray-50 border border-gray-200">
+              <Card className="bg-white border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-800">
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
                     <MapPin className="w-5 h-5" />
                     Localização
                   </CardTitle>
@@ -259,7 +258,7 @@ const NewCaseScreen = () => {
               {/* Status e Prioridade */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="status" className="text-sm font-semibold text-gray-700">Status</Label>
+                  <Label htmlFor="status" className="text-sm font-semibold" style={{ color: '#123458' }}>Status</Label>
                   <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
                     <SelectTrigger className="bg-white border-gray-200 h-12 rounded-lg">
                       <SelectValue />
@@ -273,7 +272,7 @@ const NewCaseScreen = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="priority" className="text-sm font-semibold text-gray-700">Prioridade</Label>
+                  <Label htmlFor="priority" className="text-sm font-semibold" style={{ color: '#123458' }}>Prioridade</Label>
                   <Select value={formData.priority} onValueChange={(value) => setFormData({...formData, priority: value})}>
                     <SelectTrigger className="bg-white border-gray-200 h-12 rounded-lg">
                       <SelectValue />
@@ -290,7 +289,7 @@ const NewCaseScreen = () => {
 
               {/* Descrição com áudio */}
               <div className="space-y-4">
-                <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
+                <Label htmlFor="description" className="text-sm font-semibold" style={{ color: '#123458' }}>
                   Descrição do Caso
                 </Label>
                 <Textarea
@@ -302,17 +301,18 @@ const NewCaseScreen = () => {
                   required
                 />
                 
-                {/* Sistema de áudio com cores neutras */}
-                <Card className="bg-gray-50 border border-gray-300 p-4">
+                {/* Sistema de áudio */}
+                <Card className="bg-white border border-gray-300 p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <Label className="text-gray-700 font-semibold">Nota de Áudio</Label>
+                    <Label style={{ color: '#123458' }} className="font-semibold">Nota de Áudio</Label>
                     <div className="flex gap-2">
                       <Button
                         type="button"
                         size="sm"
                         variant={isRecording ? "destructive" : "default"}
                         onClick={handleAudioRecord}
-                        className={isRecording ? "bg-red-500 hover:bg-red-600" : "bg-gray-600 hover:bg-gray-700"}
+                        style={isRecording ? {} : { backgroundColor: '#123458' }}
+                        className={isRecording ? "bg-red-500 hover:bg-red-600" : ""}
                       >
                         {isRecording ? (
                           <>
@@ -338,7 +338,7 @@ const NewCaseScreen = () => {
                           size="sm"
                           variant="outline"
                           onClick={playAudioNote}
-                          className="border-gray-300"
+                          style={{ borderColor: '#123458', color: '#123458' }}
                         >
                           <Play className="w-3 h-3" />
                         </Button>
@@ -365,10 +365,10 @@ const NewCaseScreen = () => {
               </div>
 
               {/* Evidências Dentárias */}
-              <Card className="bg-gray-50 border border-gray-200">
+              <Card className="bg-white border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-800">
-                    <Circle className="w-5 h-5" />
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
+                    <User className="w-5 h-5" />
                     Evidências Dentárias
                   </CardTitle>
                 </CardHeader>
@@ -383,9 +383,9 @@ const NewCaseScreen = () => {
               </Card>
 
               {/* Evidências Gerais */}
-              <Card className="bg-gray-50 border border-gray-200">
+              <Card className="bg-white border border-gray-200">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-800">
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
                     <Camera className="w-5 h-5" />
                     Evidências Gerais
                   </CardTitle>

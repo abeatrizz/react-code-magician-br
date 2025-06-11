@@ -8,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, User, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, User, Edit, Trash2, Search, ArrowLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { VictimaRequest } from '@/types/api';
 import { useVitimas, useCreateVitima, useUpdateVitima, useDeleteVitima } from '@/hooks/useLocalData';
-import StandardHeader from '@/components/StandardHeader';
+import Logo from '@/components/Logo';
 
 const VitimasScreen = () => {
   const { caseId } = useParams<{ caseId: string }>();
@@ -79,239 +79,258 @@ const VitimasScreen = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-        <StandardHeader title="Vítimas" />
-        <div className="p-4 pb-24">
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-pulse text-gray-500">Carregando vítimas...</div>
+      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+        <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/cases')}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <Logo size="medium" variant="dark" />
           </div>
+        </div>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-pulse text-gray-500">Carregando vítimas...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      <StandardHeader 
-        title="Vítimas" 
-        rightElement={
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => {
-                  setEditingVitima(null);
-                  reset();
-                }}
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Nova
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingVitima ? 'Editar Vítima' : 'Nova Vítima'}
-                </DialogTitle>
-              </DialogHeader>
-              
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="nic">NIC (8 dígitos)</Label>
-                    <Input
-                      id="nic"
-                      {...register('nic', { 
-                        required: 'NIC é obrigatório',
-                        pattern: {
-                          value: /^\d{8}$/,
-                          message: 'NIC deve ter exatamente 8 dígitos'
-                        }
-                      })}
-                      maxLength={8}
-                      placeholder="12345678"
-                    />
-                    {errors.nic && <p className="text-red-500 text-sm">{errors.nic.message}</p>}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="nome">Nome Completo</Label>
-                    <Input
-                      id="nome"
-                      {...register('nome', { required: 'Nome é obrigatório' })}
-                      placeholder="Nome da vítima"
-                    />
-                    {errors.nome && <p className="text-red-500 text-sm">{errors.nome.message}</p>}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="genero">Gênero</Label>
-                    <Select onValueChange={(value) => setValue('genero', value as any)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Masculino">Masculino</SelectItem>
-                        <SelectItem value="Feminino">Feminino</SelectItem>
-                        <SelectItem value="Não informado">Não informado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="idade">Idade</Label>
-                    <Input
-                      id="idade"
-                      type="number"
-                      {...register('idade', { valueAsNumber: true })}
-                      placeholder="25"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="corEtnia">Cor/Etnia</Label>
-                    <Select onValueChange={(value) => setValue('corEtnia', value as any)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Branca">Branca</SelectItem>
-                        <SelectItem value="Preta">Preta</SelectItem>
-                        <SelectItem value="Parda">Parda</SelectItem>
-                        <SelectItem value="Amarela">Amarela</SelectItem>
-                        <SelectItem value="Indígena">Indígena</SelectItem>
-                        <SelectItem value="Não informado">Não informado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
+    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/cases')}
+            className="text-gray-600 hover:text-gray-800"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <Logo size="medium" variant="dark" />
+        </div>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button
+              size="sm"
+              style={{ backgroundColor: '#123458' }}
+              className="text-white"
+              onClick={() => {
+                setEditingVitima(null);
+                reset();
+              }}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Nova
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {editingVitima ? 'Editar Vítima' : 'Nova Vítima'}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="documento">Documento</Label>
+                  <Label htmlFor="nic">NIC (8 dígitos)</Label>
                   <Input
-                    id="documento"
-                    {...register('documento')}
-                    placeholder="CPF, RG ou outro documento"
+                    id="nic"
+                    {...register('nic', { 
+                      required: 'NIC é obrigatório',
+                      pattern: {
+                        value: /^\d{8}$/,
+                        message: 'NIC deve ter exatamente 8 dígitos'
+                      }
+                    })}
+                    maxLength={8}
+                    placeholder="12345678"
                   />
+                  {errors.nic && <p className="text-red-500 text-sm">{errors.nic.message}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="endereco">Endereço</Label>
+                  <Label htmlFor="nome">Nome Completo</Label>
                   <Input
-                    id="endereco"
-                    {...register('endereco')}
-                    placeholder="Endereço completo"
+                    id="nome"
+                    {...register('nome', { required: 'Nome é obrigatório' })}
+                    placeholder="Nome da vítima"
+                  />
+                  {errors.nome && <p className="text-red-500 text-sm">{errors.nome.message}</p>}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="genero">Gênero</Label>
+                  <Select onValueChange={(value) => setValue('genero', value as any)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Masculino">Masculino</SelectItem>
+                      <SelectItem value="Feminino">Feminino</SelectItem>
+                      <SelectItem value="Não informado">Não informado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="idade">Idade</Label>
+                  <Input
+                    id="idade"
+                    type="number"
+                    {...register('idade', { valueAsNumber: true })}
+                    placeholder="25"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="observacoes">Observações</Label>
-                  <Textarea
-                    id="observacoes"
-                    {...register('observacoes')}
-                    placeholder="Observações adicionais"
-                    rows={3}
-                  />
+                  <Label htmlFor="corEtnia">Cor/Etnia</Label>
+                  <Select onValueChange={(value) => setValue('corEtnia', value as any)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Branca">Branca</SelectItem>
+                      <SelectItem value="Preta">Preta</SelectItem>
+                      <SelectItem value="Parda">Parda</SelectItem>
+                      <SelectItem value="Amarela">Amarela</SelectItem>
+                      <SelectItem value="Indígena">Indígena</SelectItem>
+                      <SelectItem value="Não informado">Não informado</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
 
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" disabled={createVitima.isPending || updateVitima.isPending}>
-                    {editingVitima ? 'Atualizar' : 'Cadastrar'}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    Cancelar
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        }
-      />
+              <div>
+                <Label htmlFor="documento">Documento</Label>
+                <Input
+                  id="documento"
+                  {...register('documento')}
+                  placeholder="CPF, RG ou outro documento"
+                />
+              </div>
 
-      <div className="p-4 pb-24 space-y-4">
-        {/* Busca */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Buscar por nome ou NIC..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <Label htmlFor="endereco">Endereço</Label>
+                <Input
+                  id="endereco"
+                  {...register('endereco')}
+                  placeholder="Endereço completo"
+                />
+              </div>
 
-        {/* Lista de Vítimas */}
-        <div className="space-y-4">
-          {filteredVitimas.length === 0 ? (
-            <Card className="bg-white shadow-sm">
-              <CardContent className="p-8">
-                <div className="text-center text-gray-500">
-                  <User className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <p>Nenhuma vítima encontrada</p>
+              <div>
+                <Label htmlFor="observacoes">Observações</Label>
+                <Textarea
+                  id="observacoes"
+                  {...register('observacoes')}
+                  placeholder="Observações adicionais"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" disabled={createVitima.isPending || updateVitima.isPending} style={{ backgroundColor: '#123458' }}>
+                  {editingVitima ? 'Atualizar' : 'Cadastrar'}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Busca */}
+      <Card style={{ backgroundColor: '#D4C9BE' }}>
+        <CardContent className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Buscar por nome ou NIC..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-white"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Lista de Vítimas */}
+      <div className="space-y-4">
+        {filteredVitimas.length === 0 ? (
+          <Card style={{ backgroundColor: '#D4C9BE' }}>
+            <CardContent className="p-8">
+              <div className="text-center text-gray-500">
+                <User className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                <p>Nenhuma vítima encontrada</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          filteredVitimas.map((vitima) => (
+            <Card key={vitima._id} style={{ backgroundColor: '#D4C9BE' }} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-semibold text-lg" style={{ color: '#123458' }}>
+                        {vitima.nome}
+                      </h3>
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-white" style={{ color: '#123458' }}>
+                        NIC: {vitima.nic}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm" style={{ color: '#123458' }}>
+                      <span>👤 {vitima.genero}</span>
+                      {vitima.idade && <span>🎂 {vitima.idade} anos</span>}
+                      {vitima.corEtnia && <span>🏷️ {vitima.corEtnia}</span>}
+                      {vitima.documento && <span>📄 {vitima.documento}</span>}
+                    </div>
+                    {vitima.observacoes && (
+                      <p className="text-sm mt-2" style={{ color: '#123458' }}>{vitima.observacoes}</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(vitima)}
+                      style={{ borderColor: '#123458', color: '#123458' }}
+                    >
+                      <Edit className="w-4 h-4 mr-1" />
+                      Editar
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDelete(vitima._id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          ) : (
-            filteredVitimas.map((vitima) => (
-              <Card key={vitima._id} className="bg-white shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-lg text-gray-900">
-                          {vitima.nome}
-                        </h3>
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          NIC: {vitima.nic}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
-                        <span>👤 {vitima.genero}</span>
-                        {vitima.idade && <span>🎂 {vitima.idade} anos</span>}
-                        {vitima.corEtnia && <span>🏷️ {vitima.corEtnia}</span>}
-                        {vitima.documento && <span>📄 {vitima.documento}</span>}
-                      </div>
-                      {vitima.observacoes && (
-                        <p className="text-sm text-gray-600 mt-2">{vitima.observacoes}</p>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(vitima)}
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Editar
-                      </Button>
-                      
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDelete(vitima._id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
+          ))
+        )}
       </div>
     </div>
   );
