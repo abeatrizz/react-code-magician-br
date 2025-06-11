@@ -62,49 +62,49 @@ const EvidenceDetailScreen = () => {
   };
 
   return (
-    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+    <div className="p-3 sm:p-4 pb-20 space-y-4 max-w-4xl mx-auto" style={{ backgroundColor: '#f5f5f0' }}>
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => navigate(`/cases/${caseId}`)}
-          className="text-gray-600"
+          className="text-gray-600 shrink-0"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         </Button>
-        <div className="flex-1">
-          <h1 className="text-xl font-bold text-gray-800">{evidenceData.title}</h1>
-          <p className="text-sm text-gray-600">Caso #{evidenceData.caseId}</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-800 truncate">{evidenceData.title}</h1>
+          <p className="text-xs sm:text-sm text-gray-600">Caso #{evidenceData.caseId}</p>
         </div>
-        <Badge variant="secondary">{evidenceData.type}</Badge>
+        <Badge variant="secondary" className="text-xs shrink-0">{evidenceData.type}</Badge>
       </div>
 
       {/* Imagem da Evidência */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardContent className="p-4">
-          <div className="bg-white rounded-lg p-4 mb-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="bg-white rounded-lg p-3 sm:p-4 mb-4">
             <img
               src={evidenceData.imageUrl}
               alt={evidenceData.title}
-              className="w-full max-h-96 object-contain rounded-lg"
+              className="w-full max-h-64 sm:max-h-96 object-contain rounded-lg"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-3 h-3 sm:w-4 sm:h-4" />
               Download
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm"
             >
-              <Edit className="w-4 h-4" />
+              <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
               Editar
             </Button>
           </div>
@@ -113,27 +113,27 @@ const EvidenceDetailScreen = () => {
 
       {/* Informações da Evidência */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <FileText className="w-5 h-5" />
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-gray-800 flex items-center gap-2 text-base sm:text-lg">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
             Detalhes da Evidência
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="space-y-3 p-3 sm:p-6 pt-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
-              <span className="text-sm text-gray-600">Data de Captura:</span>
-              <p className="font-medium">{evidenceData.captureDate}</p>
+              <span className="text-xs sm:text-sm text-gray-600">Data de Captura:</span>
+              <p className="font-medium text-sm sm:text-base">{evidenceData.captureDate}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Local:</span>
-              <p className="font-medium">{evidenceData.location}</p>
+              <span className="text-xs sm:text-sm text-gray-600">Local:</span>
+              <p className="font-medium text-sm sm:text-base break-words">{evidenceData.location}</p>
             </div>
           </div>
           <div>
-            <span className="text-sm text-gray-600">Descrição:</span>
+            <span className="text-xs sm:text-sm text-gray-600">Descrição:</span>
             <div className="bg-white/50 rounded-lg p-3 mt-1">
-              <p className="text-sm">{evidenceData.description}</p>
+              <p className="text-xs sm:text-sm">{evidenceData.description}</p>
             </div>
           </div>
         </CardContent>
@@ -141,30 +141,30 @@ const EvidenceDetailScreen = () => {
 
       {/* Análise de IA */}
       <Card style={{ backgroundColor: '#D4C9BE' }} className="border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-gray-800 flex items-center gap-2">
-            <Brain className="w-5 h-5" />
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-gray-800 flex items-center gap-2 text-base sm:text-lg">
+            <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
             Análise de IA
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-3 sm:p-6 pt-0">
           {evidenceData.aiAnalysis.completed ? (
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-green-100 text-green-800">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                <Badge className="bg-green-100 text-green-800 text-xs self-start">
                   Análise Concluída
                 </Badge>
-                <span className="text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-gray-600">
                   Confiança: {(evidenceData.aiAnalysis.confidence * 100).toFixed(0)}%
                 </span>
               </div>
               <div className="bg-white/50 rounded-lg p-3">
-                <h4 className="font-medium text-gray-800 mb-2">Principais Achados:</h4>
+                <h4 className="font-medium text-gray-800 mb-2 text-sm sm:text-base">Principais Achados:</h4>
                 <ul className="space-y-1">
                   {evidenceData.aiAnalysis.findings.map((finding, index) => (
-                    <li key={index} className="text-sm text-gray-700 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                      {finding}
+                    <li key={index} className="text-xs sm:text-sm text-gray-700 flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0"></span>
+                      <span className="break-words">{finding}</span>
                     </li>
                   ))}
                 </ul>
@@ -172,10 +172,10 @@ const EvidenceDetailScreen = () => {
             </div>
           ) : (
             <div className="text-center py-4">
-              <p className="text-gray-600 mb-3">Análise de IA não executada</p>
+              <p className="text-gray-600 mb-3 text-sm sm:text-base">Análise de IA não executada</p>
               <Button
                 onClick={handleAIAnalysis}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sm sm:text-base"
                 style={{ backgroundColor: '#123458' }}
               >
                 <Brain className="w-4 h-4" />

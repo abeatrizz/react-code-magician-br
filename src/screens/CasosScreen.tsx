@@ -72,7 +72,7 @@ const CasosScreen = () => {
 
   if (isLoading) {
     return (
-      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      <div className="p-3 sm:p-4 pb-20 space-y-4 max-w-7xl mx-auto" style={{ backgroundColor: '#f5f5f0' }}>
         <HeaderWithProfile title="Casos" showBackButton={false} />
         <div className="flex items-center justify-center py-8">
           <div className="animate-pulse text-gray-500">Carregando casos...</div>
@@ -83,7 +83,7 @@ const CasosScreen = () => {
 
   if (error) {
     return (
-      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      <div className="p-3 sm:p-4 pb-20 space-y-4 max-w-7xl mx-auto" style={{ backgroundColor: '#f5f5f0' }}>
         <HeaderWithProfile title="Casos" showBackButton={false} />
         <div className="flex items-center justify-center py-8">
           <Alert variant="destructive" className="max-w-md">
@@ -97,49 +97,49 @@ const CasosScreen = () => {
   }
 
   return (
-    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+    <div className="p-3 sm:p-4 pb-20 space-y-4 max-w-7xl mx-auto" style={{ backgroundColor: '#f5f5f0' }}>
       <HeaderWithProfile title="Casos" showBackButton={false} />
 
       {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <Card style={{ backgroundColor: '#D4C9BE' }}>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium" style={{ color: '#123458' }}>Em Andamento</p>
-                <p className="text-2xl font-bold" style={{ color: '#123458' }}>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium truncate" style={{ color: '#123458' }}>Em Andamento</p>
+                <p className="text-xl sm:text-2xl font-bold" style={{ color: '#123458' }}>
                   {casos.filter(c => c.status === 'Em andamento').length}
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8" style={{ color: '#123458' }} />
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" style={{ color: '#123458' }} />
             </div>
           </CardContent>
         </Card>
 
         <Card style={{ backgroundColor: '#D4C9BE' }}>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium" style={{ color: '#123458' }}>Finalizados</p>
-                <p className="text-2xl font-bold" style={{ color: '#123458' }}>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium truncate" style={{ color: '#123458' }}>Finalizados</p>
+                <p className="text-xl sm:text-2xl font-bold" style={{ color: '#123458' }}>
                   {casos.filter(c => c.status === 'Finalizado').length}
                 </p>
               </div>
-              <Calendar className="h-8 w-8" style={{ color: '#123458' }} />
+              <Calendar className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" style={{ color: '#123458' }} />
             </div>
           </CardContent>
         </Card>
 
         <Card style={{ backgroundColor: '#D4C9BE' }}>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium" style={{ color: '#123458' }}>Arquivados</p>
-                <p className="text-2xl font-bold" style={{ color: '#123458' }}>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium truncate" style={{ color: '#123458' }}>Arquivados</p>
+                <p className="text-xl sm:text-2xl font-bold" style={{ color: '#123458' }}>
                   {casos.filter(c => c.status === 'Arquivado').length}
                 </p>
               </div>
-              <Users className="h-8 w-8" style={{ color: '#123458' }} />
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" style={{ color: '#123458' }} />
             </div>
           </CardContent>
         </Card>
@@ -147,8 +147,8 @@ const CasosScreen = () => {
 
       {/* Busca e Filtros */}
       <Card style={{ backgroundColor: '#D4C9BE' }}>
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -156,14 +156,14 @@ const CasosScreen = () => {
                   placeholder="Buscar casos..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white"
+                  className="pl-10 bg-white text-sm"
                 />
               </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-40 bg-white">
+                <SelectTrigger className="w-full sm:w-40 bg-white text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -175,7 +175,7 @@ const CasosScreen = () => {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-40 bg-white">
+                <SelectTrigger className="w-full sm:w-40 bg-white text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -193,49 +193,54 @@ const CasosScreen = () => {
       <div className="space-y-4">
         {filteredAndSortedCasos.length === 0 ? (
           <Card style={{ backgroundColor: '#D4C9BE' }}>
-            <CardContent className="p-8">
+            <CardContent className="p-6 sm:p-8">
               <div className="text-center text-gray-500">
-                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                <p>Nenhum caso encontrado</p>
+                <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm sm:text-base">Nenhum caso encontrado</p>
               </div>
             </CardContent>
           </Card>
         ) : (
           filteredAndSortedCasos.map((caso) => (
             <Card key={caso._id} style={{ backgroundColor: '#D4C9BE' }} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-lg" style={{ color: '#123458' }}>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start mb-3 gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#123458' }}>
                         {caso.titulo || 'Título não informado'}
                       </h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(caso.status)}`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium self-start ${getStatusColor(caso.status)}`}>
                         {caso.status}
                       </span>
                     </div>
-                    <p className="text-sm mb-2 line-clamp-2" style={{ color: '#123458' }}>
+                    <p className="text-xs sm:text-sm mb-2 line-clamp-2" style={{ color: '#123458' }}>
                       {caso.descricao || 'Descrição não informada'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm" style={{ color: '#123458' }}>
-                    <span>📅 Criado em: {formatDate(caso.dataCriacao)}</span>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm" style={{ color: '#123458' }}>
+                    <span className="flex items-center gap-1">
+                      📅 Criado: {formatDate(caso.dataCriacao)}
+                    </span>
                     {caso.dataAtualizacao && (
-                      <span>✏️ Atualizado em: {formatDate(caso.dataAtualizacao)}</span>
+                      <span className="flex items-center gap-1">
+                        ✏️ Atualizado: {formatDate(caso.dataAtualizacao)}
+                      </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => navigate(`/cases/${caso._id}`)}
                       style={{ borderColor: '#123458', color: '#123458' }}
+                      className="text-xs sm:text-sm"
                     >
-                      <Eye className="w-4 h-4 mr-1" />
+                      <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       Ver
                     </Button>
                     
@@ -246,8 +251,9 @@ const CasosScreen = () => {
                           variant="outline"
                           onClick={() => navigate(`/cases/${caso._id}/edit`)}
                           style={{ borderColor: '#123458', color: '#123458' }}
+                          className="text-xs sm:text-sm"
                         >
-                          <Edit className="w-4 h-4 mr-1" />
+                          <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                           Editar
                         </Button>
                         
@@ -255,9 +261,9 @@ const CasosScreen = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDelete(caso._id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs sm:text-sm"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         </Button>
                       </>
                     )}
