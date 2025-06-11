@@ -1,8 +1,8 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
-import api, { webStorage } from '@/services/api';
-import { LoginRequest, AuthResponse, UserResponse } from '@/types/api';
+import { UserResponse } from '@/types/api';
+import { mockUsers } from '@/data/mockData';
 
 interface AuthContextType {
   user: UserResponse | null;
@@ -24,10 +24,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuthStatus = async () => {
     try {
-      const { value: token } = await webStorage.get({ key: 'auth_token' });
-      const { value: userData } = await webStorage.get({ key: 'user_data' });
+      const userData = localStorage.getItem('auth_user');
       
-      if (token && userData) {
+      if (userData) {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
         console.log('Auth status checked - user found:', parsedUser);
@@ -44,28 +43,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       console.log('Attempting login with:', { email });
       
-      const loginData: LoginRequest = { email, senha };
-      const { data }: { data: AuthResponse } = await api.post('/auth/login', loginData);
+      // Simulate login validation with mock users
+      const foundUser = mockUsers.find(u => u.email === email);
       
-      console.log('Login successful:', data);
+      if (!foundUser) {
+        toast({
+          title: "Erro no login",
+          description: "Email ou senha incorretos",
+          variant: "destructive"
+        });
+        return false;
+      }
       
-      await webStorage.set({ key: 'auth_token', value: data.token });
-      await webStorage.set({ key: 'user_data', value: JSON.stringify(data.usuario) });
+      // Simulate password check (in real app, this would be handled by backend)
+      if (senha.length < 3) {
+        toast({
+          title: "Erro no login",
+          description: "Email ou senha incorretos",
+          variant: "destructive"
+        });
+        return false;
+      }
       
-      setUser(data.usuario);
+      console.log('Login successful:', foundUser);
+      
+      localStorage.setItem('auth_user', JSON.stringify(foundUser));
+      setUser(foundUser);
+      
       toast({
         title: "Login realizado com sucesso!",
-        description: `Bem-vindo, ${data.usuario.nome}`,
+        description: `Bem-vindo, ${foundUser.nome}`,
       });
       
       return true;
     } catch (error: any) {
       console.error('Login error:', error);
       
-      const errorMessage = error.response?.data?.message || 'Email ou senha incorretos';
       toast({
         title: "Erro no login",
-        description: errorMessage,
+        description: "Erro interno do sistema",
         variant: "destructive"
       });
       return false;
@@ -76,8 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await webStorage.remove({ key: 'auth_token' });
-      await webStorage.remove({ key: 'user_data' });
+      localStorage.removeItem('auth_user');
       setUser(null);
       console.log('Logout successful');
       toast({

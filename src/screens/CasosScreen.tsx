@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Calendar, Trash2, Eye, Edit } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import StandardHeader from '@/components/StandardHeader';
-import { useCasos, useDeleteCaso } from '@/hooks/useApiCasos';
+import { useCasos, useDeleteCaso } from '@/hooks/useLocalData';
 import { useAuth } from '@/hooks/useAuth';
 
 const CasosScreen = () => {
@@ -45,6 +45,7 @@ const CasosScreen = () => {
     if (window.confirm('Tem certeza que deseja excluir este caso?')) {
       try {
         await deleteCaso.mutateAsync(id);
+        window.location.reload(); // Simple refresh for local data
       } catch (error) {
         console.error('Erro ao excluir caso:', error);
       }

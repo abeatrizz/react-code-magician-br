@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,8 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, FileText, Edit, Trash2, Search, Download } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { LaudoRequest } from '@/types/api';
-import { useLaudos, useCreateLaudo, useUpdateLaudo, useDeleteLaudo } from '@/hooks/useApiLaudos';
-import { useCasos } from '@/hooks/useApiCasos';
+import { useLaudos, useCreateLaudo, useUpdateLaudo, useDeleteLaudo } from '@/hooks/useLocalData';
+import { useCasos } from '@/hooks/useLocalData';
 import StandardHeader from '@/components/StandardHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -47,6 +46,7 @@ const LaudosScreen = () => {
       setIsModalOpen(false);
       reset();
       setEditingLaudo(null);
+      window.location.reload(); // Simple refresh for local data
     } catch (error) {
       console.error('Error saving laudo:', error);
     }
@@ -66,6 +66,7 @@ const LaudosScreen = () => {
     if (window.confirm('Tem certeza que deseja excluir este laudo?')) {
       try {
         await deleteLaudo.mutateAsync(id);
+        window.location.reload();
       } catch (error) {
         console.error('Error deleting laudo:', error);
       }
