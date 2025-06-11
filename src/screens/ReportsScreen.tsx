@@ -1,5 +1,5 @@
-
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { FileText, Download, Eye, Search, Filter, Calendar, ArrowLeft, Mic, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
+import HeaderWithProfile from '@/components/HeaderWithProfile';
 
 const ReportsScreen = () => {
   const navigate = useNavigate();
@@ -190,24 +191,7 @@ const ReportsScreen = () => {
 
   return (
     <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/dashboard')}
-            className="text-gray-600 hover:text-gray-800"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <Logo size="medium" variant="dark" />
-        </div>
-        <div className="text-center">
-          <h1 className="text-xl font-bold text-gray-800">Relatórios Periciais</h1>
-        </div>
-        <div className="w-20"></div>
-      </div>
+      <HeaderWithProfile title="Relatórios" />
 
       {/* Filtros */}
       <Card style={{ backgroundColor: '#D4C9BE' }}>
