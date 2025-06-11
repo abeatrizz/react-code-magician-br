@@ -203,6 +203,10 @@ const ReportsScreen = () => {
           </Button>
           <Logo size="medium" variant="dark" />
         </div>
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-gray-800">Relatórios Periciais</h1>
+        </div>
+        <div className="w-20"></div>
       </div>
 
       {/* Filtros */}

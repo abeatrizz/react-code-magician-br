@@ -11,11 +11,11 @@ import {
 import { 
   FileText, Users, AlertTriangle, CheckCircle, 
   Archive, Eye, Calendar, TrendingUp, BarChart3,
-  PieChart as PieChartIcon, MapPin, Zap
+  PieChart as PieChartIcon, MapPin, Zap, ArrowLeft
 } from 'lucide-react';
-import StandardHeader from '@/components/StandardHeader';
 import { useDashboard } from '@/hooks/useLocalData';
 import { useAuth } from '@/hooks/useAuth';
+import Logo from '@/components/Logo';
 
 const DashboardScreen = () => {
   const navigate = useNavigate();
@@ -156,225 +156,232 @@ const DashboardScreen = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-        <StandardHeader title="Dashboard" />
-        <div className="p-4 pb-24">
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-pulse text-gray-500">Carregando dashboard...</div>
+      <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+        <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center gap-3">
+            <Logo size="medium" variant="dark" />
           </div>
+        </div>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-pulse text-gray-500">Carregando dashboard...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f0' }}>
-      <StandardHeader 
-        title="Dashboard" 
-        subtitle={`Bem-vindo, ${user?.nome}`}
-      />
-
-      <div className="p-4 pb-24 space-y-6">
-        {/* Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-600 text-sm font-medium">Total Casos</p>
-                  <p className="text-2xl font-bold text-blue-700">{dashboardData?.totalCasos || 0}</p>
-                </div>
-                <FileText className="h-8 w-8 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-600 text-sm font-medium">Vítimas</p>
-                  <p className="text-2xl font-bold text-green-700">{dashboardData?.totalVitimas || 0}</p>
-                </div>
-                <Users className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-600 text-sm font-medium">Evidências</p>
-                  <p className="text-2xl font-bold text-yellow-700">{dashboardData?.totalEvidencias || 0}</p>
-                </div>
-                <Eye className="h-8 w-8 text-yellow-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-600 text-sm font-medium">Laudos</p>
-                  <p className="text-2xl font-bold text-purple-700">{dashboardData?.totalLaudos || 0}</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-purple-600" />
-              </div>
-            </CardContent>
-          </Card>
+    <div className="p-4 pb-20 space-y-4" style={{ backgroundColor: '#f5f5f0' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-sm">
+        <div className="flex items-center gap-3">
+          <Logo size="medium" variant="dark" />
         </div>
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
+          <p className="text-sm text-gray-600">Bem-vindo, {user?.nome}</p>
+        </div>
+        <div className="w-20"></div>
+      </div>
 
-        {/* Chart Controls */}
-        <Card className="bg-white shadow-sm">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card style={{ backgroundColor: '#D4C9BE' }}>
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-2">Análises e Visualizações</h3>
-                <p className="text-sm text-gray-600">Explore diferentes perspectivas dos dados odonto-legais</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium" style={{ color: '#123458' }}>Total Casos</p>
+                <p className="text-2xl font-bold" style={{ color: '#123458' }}>{dashboardData?.totalCasos || 0}</p>
               </div>
-              
-              <div className="flex gap-2">
-                <Select value={chartType} onValueChange={setChartType}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Tipo de análise" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="status">
-                      <div className="flex items-center gap-2">
-                        <PieChartIcon className="w-4 h-4" />
-                        Distribuição por Status
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="temporal">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4" />
-                        Evolução Temporal
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="comparison">
-                      <div className="flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4" />
-                        Comparação Mensal
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="age">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Distribuição de Idades
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="clusters">
-                      <div className="flex items-center gap-2">
-                        <Zap className="w-4 h-4" />
-                        Análise de Clusters (ML)
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+              <FileText className="h-8 w-8" style={{ color: '#123458' }} />
+            </div>
+          </CardContent>
+        </Card>
 
-                <Select value={filterPeriod} onValueChange={setFilterPeriod}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="7d">7 dias</SelectItem>
-                    <SelectItem value="30d">30 dias</SelectItem>
-                    <SelectItem value="90d">90 dias</SelectItem>
-                  </SelectContent>
-                </Select>
+        <Card style={{ backgroundColor: '#D4C9BE' }}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium" style={{ color: '#123458' }}>Vítimas</p>
+                <p className="text-2xl font-bold" style={{ color: '#123458' }}>{dashboardData?.totalVitimas || 0}</p>
+              </div>
+              <Users className="h-8 w-8" style={{ color: '#123458' }} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card style={{ backgroundColor: '#D4C9BE' }}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium" style={{ color: '#123458' }}>Evidências</p>
+                <p className="text-2xl font-bold" style={{ color: '#123458' }}>{dashboardData?.totalEvidencias || 0}</p>
+              </div>
+              <Eye className="h-8 w-8" style={{ color: '#123458' }} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card style={{ backgroundColor: '#D4C9BE' }}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium" style={{ color: '#123458' }}>Laudos</p>
+                <p className="text-2xl font-bold" style={{ color: '#123458' }}>{dashboardData?.totalLaudos || 0}</p>
+              </div>
+              <CheckCircle className="h-8 w-8" style={{ color: '#123458' }} />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Chart Controls */}
+      <Card style={{ backgroundColor: '#D4C9BE' }}>
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h3 className="font-semibold mb-2" style={{ color: '#123458' }}>Análises e Visualizações</h3>
+              <p className="text-sm" style={{ color: '#123458' }}>Explore diferentes perspectivas dos dados odonto-legais</p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Select value={chartType} onValueChange={setChartType}>
+                <SelectTrigger className="bg-white border border-gray-200">
+                  <SelectValue placeholder="Tipo de análise" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="status">
+                    <div className="flex items-center gap-2">
+                      <PieChartIcon className="w-4 h-4" />
+                      Distribuição por Status
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="temporal">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4" />
+                      Evolução Temporal
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="comparison">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4" />
+                      Comparação Mensal
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="age">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      Distribuição de Idades
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="clusters">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      Análise de Clusters (ML)
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={filterPeriod} onValueChange={setFilterPeriod}>
+                <SelectTrigger className="bg-white border border-gray-200 w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="7d">7 dias</SelectItem>
+                  <SelectItem value="30d">30 dias</SelectItem>
+                  <SelectItem value="90d">90 dias</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Chart */}
+      <Card style={{ backgroundColor: '#D4C9BE' }}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
+            {chartType === 'status' && <PieChartIcon className="w-5 h-5" />}
+            {chartType === 'temporal' && <TrendingUp className="w-5 h-5" />}
+            {chartType === 'comparison' && <BarChart3 className="w-5 h-5" />}
+            {chartType === 'age' && <Users className="w-5 h-5" />}
+            {chartType === 'clusters' && <Zap className="w-5 h-5" />}
+            
+            {chartType === 'status' && 'Distribuição de Casos por Status'}
+            {chartType === 'temporal' && 'Evolução Temporal dos Dados'}
+            {chartType === 'comparison' && 'Comparação de Casos por Mês'}
+            {chartType === 'age' && 'Distribuição de Idades das Vítimas'}
+            {chartType === 'clusters' && 'Agrupamento por Machine Learning'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="bg-white rounded-lg">
+          {getChartComponent()}
+        </CardContent>
+      </Card>
+
+      {/* Spatial Distribution Map Placeholder */}
+      <Card style={{ backgroundColor: '#D4C9BE' }}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2" style={{ color: '#123458' }}>
+            <MapPin className="w-5 h-5" />
+            Distribuição Espacial dos Casos
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 bg-white rounded-lg flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+              <p className="font-medium">Mapa de Distribuição Espacial</p>
+              <p className="text-sm">Visualização geográfica dos casos será implementada</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card style={{ backgroundColor: '#D4C9BE' }} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/cases')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-3 rounded-lg">
+                <FileText className="w-6 h-6" style={{ color: '#123458' }} />
+              </div>
+              <div>
+                <h4 className="font-semibold" style={{ color: '#123458' }}>Gerenciar Casos</h4>
+                <p className="text-sm" style={{ color: '#123458' }}>Visualizar e editar casos</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Main Chart */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {chartType === 'status' && <PieChartIcon className="w-5 h-5" />}
-              {chartType === 'temporal' && <TrendingUp className="w-5 h-5" />}
-              {chartType === 'comparison' && <BarChart3 className="w-5 h-5" />}
-              {chartType === 'age' && <Users className="w-5 h-5" />}
-              {chartType === 'clusters' && <Zap className="w-5 h-5" />}
-              
-              {chartType === 'status' && 'Distribuição de Casos por Status'}
-              {chartType === 'temporal' && 'Evolução Temporal dos Dados'}
-              {chartType === 'comparison' && 'Comparação de Casos por Mês'}
-              {chartType === 'age' && 'Distribuição de Idades das Vítimas'}
-              {chartType === 'clusters' && 'Agrupamento por Machine Learning'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {getChartComponent()}
-          </CardContent>
-        </Card>
-
-        {/* Spatial Distribution Map Placeholder */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              Distribuição Espacial dos Casos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                <p className="font-medium">Mapa de Distribuição Espacial</p>
-                <p className="text-sm">Visualização geográfica dos casos será implementada</p>
+        <Card style={{ backgroundColor: '#D4C9BE' }} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/laudos')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-3 rounded-lg">
+                <CheckCircle className="w-6 h-6" style={{ color: '#123458' }} />
+              </div>
+              <div>
+                <h4 className="font-semibold" style={{ color: '#123458' }}>Laudos Periciais</h4>
+                <p className="text-sm" style={{ color: '#123458' }}>Criar e gerenciar laudos</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/cases')}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">Gerenciar Casos</h4>
-                  <p className="text-sm text-gray-600">Visualizar e editar casos</p>
-                </div>
+        <Card style={{ backgroundColor: '#D4C9BE' }} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/reports')}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-3 rounded-lg">
+                <BarChart3 className="w-6 h-6" style={{ color: '#123458' }} />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/laudos')}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-green-100 p-3 rounded-lg">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">Laudos Periciais</h4>
-                  <p className="text-sm text-gray-600">Criar e gerenciar laudos</p>
-                </div>
+              <div>
+                <h4 className="font-semibold" style={{ color: '#123458' }}>Relatórios</h4>
+                <p className="text-sm" style={{ color: '#123458' }}>Gerar relatórios estatísticos</p>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/relatorios')}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-purple-100 p-3 rounded-lg">
-                  <BarChart3 className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">Relatórios</h4>
-                  <p className="text-sm text-gray-600">Gerar relatórios estatísticos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

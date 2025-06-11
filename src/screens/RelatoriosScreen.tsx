@@ -92,6 +92,9 @@ const RelatoriosScreen = () => {
           </Button>
           <Logo size="medium" variant="dark" />
         </div>
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-gray-800">Relatórios</h1>
+        </div>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button

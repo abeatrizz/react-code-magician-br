@@ -182,6 +182,10 @@ const NewCaseScreen = () => {
           </Button>
           <Logo size="medium" variant="dark" />
         </div>
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-gray-800">Novo Caso</h1>
+        </div>
+        <div className="w-20"></div>
       </div>
 
       <div className="space-y-6">
