@@ -8,14 +8,23 @@ const BottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log('BottomNavigation - current location:', location.pathname);
+
   const navItems = [
     { icon: Home, label: 'Início', path: '/dashboard' },
     { icon: FolderOpen, label: 'Casos', path: '/cases' },
   ];
 
   const isActive = (path: string) => {
-    return location.pathname === path || 
+    const active = location.pathname === path || 
            (path === '/cases' && location.pathname.startsWith('/cases'));
+    console.log(`Checking if ${path} is active for ${location.pathname}:`, active);
+    return active;
+  };
+
+  const handleNavigation = (path: string) => {
+    console.log('Navigating to:', path);
+    navigate(path);
   };
 
   const FirstIcon = navItems[0].icon;
@@ -26,7 +35,7 @@ const BottomNavigation = () => {
       <div className="flex justify-around items-center relative max-w-md mx-auto">
         {/* Primeiro item */}
         <button
-          onClick={() => navigate(navItems[0].path)}
+          onClick={() => handleNavigation(navItems[0].path)}
           className={`flex flex-col items-center py-2 px-3 sm:px-6 rounded-lg transition-colors ${
             isActive(navItems[0].path)
               ? 'text-blue-600 bg-blue-50'
@@ -39,7 +48,7 @@ const BottomNavigation = () => {
 
         {/* Botão central destacado */}
         <Button
-          onClick={() => navigate('/new-case')}
+          onClick={() => handleNavigation('/new-case')}
           size="lg"
           className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2 rounded-full w-12 h-12 sm:w-14 sm:h-14 shadow-lg"
           style={{ backgroundColor: '#123458' }}
@@ -49,7 +58,7 @@ const BottomNavigation = () => {
 
         {/* Segundo item */}
         <button
-          onClick={() => navigate(navItems[1].path)}
+          onClick={() => handleNavigation(navItems[1].path)}
           className={`flex flex-col items-center py-2 px-3 sm:px-6 rounded-lg transition-colors ${
             isActive(navItems[1].path)
               ? 'text-blue-600 bg-blue-50'

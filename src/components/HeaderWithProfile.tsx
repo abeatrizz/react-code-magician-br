@@ -24,11 +24,17 @@ const HeaderWithProfile: React.FC<HeaderWithProfileProps> = ({
   const { user } = useAuth();
 
   const handleBack = () => {
+    console.log('Header back button clicked');
     if (onBack) {
       onBack();
     } else {
       navigate(-1);
     }
+  };
+
+  const handleProfileClick = () => {
+    console.log('Profile clicked, navigating to /profile');
+    navigate('/profile');
   };
 
   const getInitials = (name: string) => {
@@ -62,7 +68,7 @@ const HeaderWithProfile: React.FC<HeaderWithProfileProps> = ({
       </div>
       
       <button
-        onClick={() => navigate('/profile')}
+        onClick={handleProfileClick}
         className="flex items-center gap-1 sm:gap-2 hover:bg-gray-50 rounded-lg p-1 sm:p-2 transition-colors shrink-0"
       >
         <Avatar className="w-6 h-6 sm:w-8 sm:h-8">

@@ -23,6 +23,8 @@ import './App.css';
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
 
+  console.log('App rendering - isAuthenticated:', isAuthenticated, 'loading:', loading);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f5f0' }}>
@@ -32,19 +34,21 @@ function AppContent() {
   }
 
   if (!isAuthenticated) {
+    console.log('User not authenticated, showing login routes');
     return (
       <>
         <Routes>
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
           <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         <Toaster />
       </>
     );
   }
 
+  console.log('User authenticated, showing app routes');
   return (
     <div className="min-h-screen bg-gray-50">
       <Routes>
@@ -59,7 +63,9 @@ function AppContent() {
         <Route path="/reports" element={<ReportsScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/admin/users" element={<AdminUsersScreen />} />
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
       <BottomNavigation />
       <Toaster />
